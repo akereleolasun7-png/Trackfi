@@ -169,7 +169,7 @@ export default function TablesPage() {
                 </p>
               </div>
               <Link
-                href={`/menu/$\{tables.find(t => t.id === selected)?.number}`}
+                href={`/menu/${tables.find(t => t.id === selected)?.number}`}
                 className="flex items-center gap-2 bg-[#16A34A] hover:bg-[#15803D] text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-colors"
               >
                 Order Now <ArrowRight className="w-4 h-4" />
