@@ -25,7 +25,6 @@ export default function NavbarDashboard({ user, pageTitle = "dashboard"}: Navbar
     const { state, isMobile } = useSidebar()
     const sidebarWidth = state === "expanded" ? "16rem" : "3rem"
     
-    const searchRef = useRef<HTMLDivElement>(null)
     const userMenuRef = useRef<HTMLDivElement>(null)
     // Close handlers
     useEffect(() => {

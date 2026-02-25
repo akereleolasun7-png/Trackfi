@@ -2,10 +2,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
 // Constants - keep these consistent across all endpoints
-const SESSION_DURATION = 60 * 60 * 1000; // 1 hour
-const INACTIVITY_THRESHOLD = 15 * 60 * 1000; // 15 minutes
+import { SESSION_DURATION, INACTIVITY_THRESHOLD } from '@/lib/constants/sessions';
 
 export async function POST(request: Request) {
   
@@ -59,11 +57,6 @@ export async function POST(request: Request) {
       // Continue to create new session below
     } else {
       // Session is still valid, update and return it
-      await supabase
-        .from('table_sessions')
-        .update({ last_activity: now.toISOString() })
-        .eq('id', existingSession.id);
-
       const cookieStore = await cookies();
       cookieStore.set('session_token', existingSession.session_token, {
         httpOnly: true,

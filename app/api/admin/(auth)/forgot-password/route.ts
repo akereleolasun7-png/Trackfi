@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       );
     }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXTAUTH_URL}/admin/new-password`,
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/admin/new-password`,
     });
 
     if (error) {

@@ -2,13 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { sessionsApi, menuApi } from '@/lib/api';
+import { sessionsApi, menuApi , cartApi } from '@/lib/api';
 import { BooksSkeleton } from '@/components/dashboard/skeleton';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardFooter } from '@/components/ui/card';
 import { ShoppingCart } from 'lucide-react';
 import MediaDisplay from '@/components/menu/mediaDisplay';
-
+import { MenuItem } from "@/types";
 interface PageProps {
   params: Promise<{ table: string }>;
 }
@@ -21,10 +21,9 @@ export default function OrderPage({ params }: PageProps) {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterType>('all');
-
   const ITEMS_PER_PAGE = 10;
   const queryClient = useQueryClient();
-
+  
   // Start session
   const {
     isLoading: isSessionLoading,
@@ -40,20 +39,18 @@ export default function OrderPage({ params }: PageProps) {
 
   // Add to cart mutation - MOVED TO TOP LEVEL
   const { mutate: addToCart, isPending: isAddingToCart } = useMutation({
-    mutationFn: (menuId: string) => menuApi.addCart(menuId),
-    onSuccess: () => {
-      toast.success('Added to cart', {
-        description: `Menu item added to your cart.`,
-      });
-      // Optionally invalidate cart query to refresh cart count
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-    },
-    onError: (error: Error) => {
-      toast.error('Failed to add item to cart', {
-        description: error.message,
-      });
-    },
-  });
+  mutationFn: (menuId: string) => cartApi.addCart(menuId),
+  onMutate: () => {
+    toast.loading('Adding to cart...', { id: 'cart-toast' });
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['cart'] });
+    toast.success('Added to cart!', { id: 'cart-toast' });
+  },
+  onError: (error: Error) => {
+    toast.error('Failed to add item', { id: 'cart-toast', description: error.message });
+  },
+});
 
   // Handle cart click
   const handleCart = (menuId: string) => {
@@ -92,7 +89,7 @@ export default function OrderPage({ params }: PageProps) {
 
   // Menu query
   const {
-    data: menus = [],
+    data: menusResponse,
     isLoading: isMenuLoading,
     error: menuError,
   } = useQuery({
@@ -113,7 +110,11 @@ export default function OrderPage({ params }: PageProps) {
       });
     }
   }, [menuError]);
+  // Pull out menus array and total from response
+const menus = menusResponse?.data ?? [];
+const total = menusResponse?.total ?? 0;
 
+  const hasMore = (page + 1) * ITEMS_PER_PAGE < total;
   const prevPage = () => setPage((old) => Math.max(old - 1, 0));
   const nextPage = () => setPage((old) => old + 1);
 
@@ -149,14 +150,15 @@ export default function OrderPage({ params }: PageProps) {
       )}
 
       {/* Menu loader */}
-      {isMenuLoading && !isSessionLoading && <BooksSkeleton />}
+       {isMenuLoading && !isSessionLoading && <BooksSkeleton />}
 
       {/* Menu error */}
-      {menuError && (
+       {menuError && (
         <div className="text-red-500 text-center mt-6">Failed to load menus</div>
-      )}
+      )} 
 
-      <div className="flex items-center justify-between w-full mb-4 gap-4 flex-wrap">
+      {!isSessionLoading && !isMenuLoading && (
+          <div className="flex items-center justify-between w-full mb-4 gap-4 flex-wrap">
         {/* LEFT: Filters */}
         <div className="flex gap-3 flex-wrap">
           {(['all', 'veg', 'vegan'] as FilterType[]).map((f) => (
@@ -180,11 +182,13 @@ export default function OrderPage({ params }: PageProps) {
             className="w-full sm:w-72 p-2 border rounded-md"
             placeholder="Search menu items..."
           />
-        </div>
       </div>
+        </div>
+      )}
+      
 
       {/* Menu grid */}
-      {!isMenuLoading && !menuError && (
+      {!isSessionLoading && !isMenuLoading && menus.length > 0 && (
         <>
           <div className="w-full max-w-7xl mx-auto grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
             {filteredMenus.map((menu) => (
@@ -226,14 +230,16 @@ export default function OrderPage({ params }: PageProps) {
 
           {/* Pagination */}
           <div className="flex justify-center items-center gap-4 mt-6">
-            <Button size="sm" onClick={prevPage} disabled={page === 0}>
+            <Button size="sm" onClick={prevPage} disabled={page === 0} 
+            className='cursor-pointer'>
               Prev
             </Button>
             <span>Page {page + 1}</span>
             <Button
               size="sm"
               onClick={nextPage}
-              disabled={menus.length < ITEMS_PER_PAGE}
+              disabled={!hasMore}
+              className='cursor-pointer'
             >
               Next
             </Button>

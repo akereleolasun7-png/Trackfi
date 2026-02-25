@@ -2,9 +2,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
-// Same constants as start endpoint
-const INACTIVITY_THRESHOLD = 15 * 60 * 1000; // 15 minutes
+// Constants - keep these consistent across all endpoints
+import { SESSION_DURATION, INACTIVITY_THRESHOLD } from '@/lib/constants/sessions';
 
 export async function GET() {
   const supabase = await createClient();
@@ -81,11 +80,6 @@ export async function GET() {
     return NextResponse.json({ error: "Session inactive" }, { status: 401 });
   }
 
-  // Update last activity
-  await supabase
-    .from('table_sessions')
-    .update({ last_activity: now.toISOString() })
-    .eq('id', session.id);
 
   return NextResponse.json({ session });
 

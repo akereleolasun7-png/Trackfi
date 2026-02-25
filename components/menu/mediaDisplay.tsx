@@ -4,11 +4,13 @@ interface MediaDisplayProps {
   image_url?: string | null;
   video_url?: string | null;
   alt: string;
+  className?: string;
 }
-function MediaDisplay({ video_url, image_url, alt }: MediaDisplayProps) {
+function MediaDisplay({ video_url, image_url, alt, className }: MediaDisplayProps) {
+
   const videoRef = useRef<HTMLVideoElement>(null)
   return (
-    <div className="relative h-52 w-full overflow-hidden">
+    <div className={`relative overflow-hidden ${className ?? 'h-52 w-full'}`}>
       {/* Priority 1: Video */}
       {video_url ? (
           <video

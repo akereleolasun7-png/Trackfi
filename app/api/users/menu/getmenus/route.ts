@@ -15,6 +15,11 @@ export async function GET(req: NextRequest) {
       .select('id,price,name,category,description,image_url,video_url,is_available,created_at,is_veg ,is_vegan')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
+      // for the pagination we need the total count of available menu items to calculate the total number of pages. We can get this count using a separate query with the 'head' option to avoid fetching all the data again.
+      const { count } = await supabase
+        .from('menu_items')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_available', true);
 
       if (error) {
       console.error('Supabase error:', error);
@@ -38,7 +43,7 @@ export async function GET(req: NextRequest) {
       created_at: m.created_at,
     }));
 
-    return NextResponse.json(transformedMenus);
+    return NextResponse.json({ data: transformedMenus, total : count });
   } catch (error) {
     console.error('Error fetching menus:', error);
     return NextResponse.json({ error: 'Failed to fetch menus' }, { status: 500 });

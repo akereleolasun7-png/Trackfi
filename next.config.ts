@@ -1,13 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-   eslint: {
-    ignoreDuringBuilds: true, // Temporarily ignore ESLint during builds
+  eslint: {
+    ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true, // Temporarily ignore TypeScript errors during builds
+    ignoreBuildErrors: true,
   },
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

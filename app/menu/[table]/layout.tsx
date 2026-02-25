@@ -1,5 +1,5 @@
 // app/menu/[table]/layout.tsx
-import SessionProvider from './SessionProvider';
+import SessionProvider from '@/hooks/SessionProvider';
 import { Providers } from "@/provider";
 import NavbarDashboard from '@/components/users/navbarDashboard';
 interface LayoutProps {
@@ -7,7 +7,7 @@ interface LayoutProps {
   params: Promise<{ table: string }>;
 }
 
-export default async function OrderLayout({ children, params }: LayoutProps) {
+export default async function MenuLayout({ children, params }: LayoutProps) {
   const { table } = await params;
   const tableNumber = Number(table);
 

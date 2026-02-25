@@ -29,4 +29,18 @@ export const sessionsApi = {
 
     return data;
   },
+  heartbeat: async () => {
+  const res = await fetch('/api/users/session/heartbeat', {
+    method: 'POST',
+    credentials: 'include',
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || 'Heartbeat failed');
+  }
+
+  return data;
+},
 };
