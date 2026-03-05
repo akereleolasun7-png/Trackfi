@@ -1,7 +1,7 @@
 // app/api/admin/settings/tablenumber/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-
+import {updateRestaurantSettingsSchema} from '@/lib/validations/settings'
 export async function PUT(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -12,7 +12,7 @@ export async function PUT(req: NextRequest) {
     }
     
     const body = await req.json();
-    const { table_count } = body;
+    const { table_count } = updateRestaurantSettingsSchema.parse(body);
     
     // Validate table count
     if (!table_count || table_count < 1 || table_count > 100) {

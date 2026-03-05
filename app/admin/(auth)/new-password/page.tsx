@@ -38,7 +38,7 @@ export default function NewPasswordPage() {
   // Extract code from URL on component mount
   useEffect(() => {
     const codeFromUrl = searchParams.get("code");
-    console.log(codeFromUrl);
+    
     if (!codeFromUrl) {
       toast.error("Invalid reset link. Please request a new one.");
       router.push("/admin/forgot-password");

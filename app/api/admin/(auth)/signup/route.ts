@@ -14,11 +14,7 @@ export async function POST(req: NextRequest) {
           { status: 409 }
       );
     }
-    console.log("STAFF CHECK RESULT:", {
-      email,
-      staff,
-      staffError,
-    });
+   
     // Proceed with signup
     const { data, error } = await supabase.auth.signUp({
       email,  

@@ -1,7 +1,7 @@
 // app/api/admin/settings/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-
+import {updateRestaurantSettingsSchema} from '@/lib/validations/settings'
 export async function PUT(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -11,11 +11,10 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const body = await req.json();
-    console.log(body);
-    const { order_code } = body;
+    const { order_code } = updateRestaurantSettingsSchema.parse(body);
     
     // Validate inputs
-    if (order_code && !/^\d{4}$/.test(order_code)) {
+    if (order_code && !/^\d{4}$/.test(order_code.toString())) {
       return NextResponse.json(
         { success: false, error: 'Order code must be exactly 4 digits' },
         { status: 400 }

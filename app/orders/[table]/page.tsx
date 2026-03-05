@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { createClient } from '@/utils/supabase/client';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { orderApi } from '@/lib/api';
 import { ClipboardList, Clock, CheckCircle2, ChefHat, XCircle, PackageCheck } from 'lucide-react';
 import Link from 'next/link';
@@ -10,8 +11,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { OrderItem, OrderWithItems } from '@/types';
-import { OrderCardSkeleton } from '@/components/dashboard/skeleton';
-
+import { OrderCardSkeleton } from '@/components/common/skeleton';
 interface PageProps {
   params: Promise<{ table: string }>;
 }
@@ -116,13 +116,28 @@ export default function OrdersPage({ params }: PageProps) {
   const paramsData = React.use(params);
   const tableNumber = Number(paramsData.table);
   const router = useRouter();
-
-  const { data: orders = [], isLoading, error } = useQuery({
+  const queryClient = useQueryClient();
+  const { data: orders = [], isLoading, error } = useQuery<OrderWithItems[]>({
     queryKey: ['orders', tableNumber],
     queryFn: () => orderApi.getOrders(),
     refetchInterval: 30 * 1000, // poll every 30s for status updates
     retry: 1,
   });
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel('orders-realtime')
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'orders' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['orders', tableNumber] });
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); }
+  }, [tableNumber, queryClient]);
 
   useEffect(() => {
     if (!error) return;

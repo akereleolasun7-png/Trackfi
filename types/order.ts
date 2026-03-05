@@ -1,13 +1,21 @@
+export const ORDER_STATUSES = ['pending', 'preparing', 'ready', 'completed', 'cancelled'] as const;
+export type OrderStatus = typeof ORDER_STATUSES[number];
 export interface Order {
   id: string;
   table_session_id: string;
-  status: 'pending' | 'preparing' | 'ready' | 'completed' | 'cancelled';
+  status: OrderStatus;
   total_amount: number;
   estimated_time: number;
   created_at: string;
   updated_at: string;
+  order_items?: OrderItem[];
+  table_sessions?: {
+    table_id: string;
+    tables: {
+      table_number: number;
+    } | null;
+  } | null;
 }
-
 export interface OrderItem {
   id: string;
   quantity: number;

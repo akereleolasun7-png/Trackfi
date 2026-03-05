@@ -6,10 +6,10 @@ import { cartApi , orderApi} from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus, ShoppingBag, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import MediaDisplay from '@/components/menu/mediaDisplay';
+import MediaDisplay from '@/components/common/mediaDisplay';
 import { CartItem } from '@/types';
 import { useRouter } from 'next/navigation';
-import { CartSkeleton } from '@/components/dashboard/skeleton';
+import { CartSkeleton } from '@/components/common/skeleton';
 interface PageProps {
   params: Promise<{ table: string }>;
 }

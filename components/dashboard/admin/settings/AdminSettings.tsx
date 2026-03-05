@@ -3,15 +3,10 @@ import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner';
 import { QrCode, Printer, Plus, Minus, Copy, RefreshCw } from 'lucide-react';
 import QRCode from 'qrcode';
-import { settingsApi } from '@/lib/api/settings';
+import { settingsApi } from '@/lib/api/adminSettings';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
-interface TableQR {
-  tableNumber: number;
-  qrCodeUrl: string;
-  paymentCode: string;
-}
-
+import { TableQR, RestaurantSettings } from "@/types"
 function AdminSettings() {
   const queryClient = useQueryClient();
   const [tableCount, setTableCount] = useState(10);
@@ -22,7 +17,7 @@ function AdminSettings() {
   const printRef = useRef<HTMLDivElement>(null);
 
   // Fetch settings
-  const { data: settings, isLoading, isError } = useQuery({
+  const { data: settings, isLoading, isError } = useQuery<{ success: boolean; data: RestaurantSettings }>({
     queryKey: ['restaurant-settings'],
     queryFn: settingsApi.getSettings
   });
@@ -77,12 +72,12 @@ function AdminSettings() {
       toast.error('Table count must be between 1 and 100');
       return;
     }
-  
+
     setGenerating(true);
-    
+
     try {
       const qrs: TableQR[] = [];
-      
+
       for (let i = 1; i <= tableCount; i++) {
         const qrData = `${window.location.origin}/order?table=${i}`;
         const qrCodeUrl = await QRCode.toDataURL(qrData, {
@@ -103,10 +98,10 @@ function AdminSettings() {
 
       // Update table count in database
       await updateTableCountMutation.mutateAsync(tableCount);
-      
+
       setQrCodes(qrs);
       setShowQRGrid(true);
-      
+
     } catch (error) {
       console.error('Error generating QR codes:', error);
       toast.error('Failed to generate QR codes');
@@ -119,7 +114,7 @@ function AdminSettings() {
     if (printRef.current) {
       const printContent = printRef.current.innerHTML;
       const printWindow = window.open('', '_blank');
-      
+
       if (printWindow) {
         printWindow.document.write(`
           <!DOCTYPE html>

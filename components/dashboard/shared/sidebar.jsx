@@ -69,26 +69,27 @@ export function AppSidebar({ userRole }) {
     userRole === "admin"
       ? adminItems
       : userRole === "staff"
-      ? staffItems
-      : userItems;
+        ? staffItems
+        : userItems;
 
   return (
     <Sidebar
-      collapsible="icon"
-      className="h-screen shadow-xl transition-all duration-200
-      bg-[#053c05]/95 dark:bg-[#053c05]/95"
-    >
+  collapsible="icon"
+  className="h-screen shadow-xl transition-all duration-200
+  bg-[#16A34A]/90 dark:bg-[#16A33D]/95 border-r border-white/10"
+>
       {/* ---------- HEADER ---------- */}
-      <div className="flex items-center p-6">
+      <div className="flex items-center p-6 ">
         {!isCollapsed && (
           <Link href="/">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center">
               <Image
                 src="/logos/savory_icon.png"
                 alt="Savory & co logo"
                 width={120}
                 height={120}
                 priority
+                className="object-contain"
               />
             </div>
           </Link>
@@ -104,7 +105,7 @@ export function AppSidebar({ userRole }) {
             </SidebarGroupLabel>
           )}
 
-          <SidebarGroupContent className="mt-2">
+          <SidebarGroupContent className="mt-4">
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>

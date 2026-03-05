@@ -21,12 +21,19 @@ export type {
   LoadingType, 
   AuthLoadingContextType 
 } from './auth';
+// menu types
 export type {
   MenuItem,
   CreateMenuItem,
   UpdateMenuItem,
   MenuItemWithRestaurant 
 } from './menu'
-
+// cart
 export type { CartItem } from './cart';
-export type * from './order';
+// order
+export * from './order';
+// analytics
+export type * from './analytics'
+
+// settings 
+export type * from './settings'

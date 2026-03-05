@@ -1,0 +1,303 @@
+"use client";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function UsersSkeleton({ count = 4 }: { count?: number }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between">
+        <div className="relative flex-1 max-w-md">
+          <Skeleton className="w-full h-10 rounded-lg" />
+        </div>
+        <div className="flex gap-2">
+          <Skeleton className="w-32 h-10 rounded-lg" />
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                {['User', 'Package', 'Role', 'Joined', 'Actions'].map((header) => (
+                  <th key={header} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {Array.from({ length: count }).map((_, index) => (
+                <tr key={index}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <div className="ml-4 space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap"><Skeleton className="h-6 w-16 rounded-full" /></td>
+                  <td className="px-6 py-4 whitespace-nowrap"><Skeleton className="h-6 w-12 rounded-full" /></td>
+                  <td className="px-6 py-4 whitespace-nowrap"><Skeleton className="h-4 w-20" /></td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex space-x-2">
+                      <Skeleton className="h-6 w-6 rounded" />
+                      <Skeleton className="h-6 w-6 rounded" />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <Skeleton className="h-8 w-12 mb-2" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function UsersBoxSkeleton({ count = 4 }: { count?: number }) {
+  return (
+    <div className="mx-auto p-6 space-y-6">
+      <div className="text-center">
+        <Skeleton className="h-8 w-64 mx-auto" />
+        <Skeleton className="h-4 w-48 mx-auto mt-2" />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: count }).map((_, index) => (
+          <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+            <Skeleton className="w-8 h-8 rounded-full mx-auto" />
+            <Skeleton className="h-5 w-32 mx-auto mt-2" />
+            <Skeleton className="h-4 w-24 mx-auto mt-1" />
+            <div className="mt-3 flex justify-between items-center">
+              <Skeleton className="h-5 w-16" />
+              <Skeleton className="h-6 w-20 rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+        <Skeleton className="h-6 w-48 mb-4" />
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="flex items-center space-x-4">
+              <Skeleton className="h-12 w-12 rounded-full" />
+              <div className="space-y-2 flex-1">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+              <Skeleton className="h-8 w-20 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CardSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700 text-center">
+          <Skeleton className="w-10 h-10 rounded-full mx-auto mb-4" />
+          <Skeleton className="h-4 w-32 mx-auto mb-2" />
+          <Skeleton className="h-3 w-24 mx-auto" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function BooksSkeleton({ count = 8 }: { count?: number }) {
+  return (
+    <div className="p-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {Array.from({ length: count }).map((_, index) => (
+          <div key={index} className="w-full bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden flex flex-col animate-pulse">
+            <div className="relative h-40 bg-gray-300 dark:bg-gray-600" />
+            <div className="p-4 flex flex-col flex-1 gap-3">
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
+              <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
+              <div className="flex gap-2 mt-auto">
+                <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
+                <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function OrderCardSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <div className="min-h-[calc(100vh-80px)] container mx-auto max-w-2xl px-4 py-6">
+      <Skeleton className="h-8 w-32 mb-6" />
+      <div className="flex flex-col gap-4">
+        {Array.from({ length: count }).map((_, index) => (
+          <div key={index} className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3 animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-gray-300" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+              <Skeleton className="h-4 w-20" />
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+              <div className="flex justify-between">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t border-black/5">
+              <Skeleton className="h-3 w-12" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function CartSkeleton() {
+  return (
+    <div className="container mx-auto max-w-2xl px-4 py-6 pb-40">
+      <Skeleton className="h-8 w-28 mb-6" />
+      <div className="flex flex-col gap-4">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="flex items-center gap-4 bg-white rounded-2xl border p-4 shadow-sm animate-pulse">
+            <div className="h-16 w-16 rounded-xl shrink-0 bg-gray-300" />
+            <div className="flex-1 min-w-0 space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="w-8 h-8 rounded-full bg-gray-300" />
+              <div className="w-6 h-4 bg-gray-300 rounded" />
+              <div className="w-8 h-8 rounded-full bg-gray-300" />
+              <div className="w-8 h-8 rounded-full bg-gray-300" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-xl p-4 z-50">
+        <div className="max-w-2xl mx-auto space-y-3 animate-pulse">
+          <div className="flex justify-between">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <div className="flex justify-between">
+            <Skeleton className="h-5 w-12" />
+            <Skeleton className="h-5 w-24" />
+          </div>
+          <Skeleton className="h-12 w-full rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function AnalyticsSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Skeleton className="h-8 w-48" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-8 w-20" />
+          </div>
+        ))}
+      </div>
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-3">
+        <Skeleton className="h-5 w-40" />
+        <Skeleton className="h-[250px] w-full rounded-lg" />
+      </div>
+    </div>
+  );
+}
+
+export function AdminOrdersSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <Skeleton className="h-8 w-24 rounded-lg" />
+        <div className="flex gap-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-7 w-20 rounded-full" />
+          ))}
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+              <tr>
+                {['Table', 'Items', 'Total', 'Status', 'Actions'].map((h) => (
+                  <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              {Array.from({ length: count }).map((_, i) => (
+                <tr key={i} style={{ opacity: 1 - i * 0.12 }}>
+                  {/* Table */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-3 w-12" />
+                    </div>
+                  </td>
+                  {/* Items */}
+                  <td className="px-6 py-4">
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-3.5 w-36" />
+                      <Skeleton className="h-3.5 w-28" />
+                    </div>
+                  </td>
+                  {/* Total */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Skeleton className="h-4 w-20" />
+                  </td>
+                  {/* Status */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                  </td>
+                  {/* Actions */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Skeleton className="h-8 w-28 rounded-lg" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}

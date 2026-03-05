@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
      .eq('type', 'activation_request')
     .gte('created_at', oneDayAgo.toISOString())
     .limit(1);
-  console.log(recentRequests , staff.id)
+  
   if (recentRequests && recentRequests.length > 0) {
     const recentRequest = recentRequests[0];
     const hoursSince = Math.ceil(

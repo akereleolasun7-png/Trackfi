@@ -1,12 +1,12 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { Users, ShoppingCart, Utensils, TrendingUp } from "lucide-react";
-import { DashboardShell } from "@/components/dashboard/admin/dashboardShell";
-import StaffManagement from "@/components/dashboard/admin/staffManagement";
-import OrdersAnalysis from "@/components/dashboard/admin/ordersAnalysis";
-import MenuAnalysis from "@/components/dashboard/admin/menuAnalysis";
-import RevenueAnalysis from "@/components/dashboard/admin/revenueAnalysis";
-import { UsersBoxSkeleton } from "../skeleton";
+import { DashboardShell } from "@/components/dashboard/admin/dashboard/dashboardShell";
+import StaffManagement from "@/components/dashboard/admin/dashboard/staffManagement";
+import OrdersAnalysis from "@/components/dashboard/admin/dashboard/ordersAnalysis";
+import MenuAnalysis from "@/components/dashboard/admin/dashboard/menuAnalysis";
+import RevenueAnalysis from "@/components/dashboard/admin/dashboard/revenueAnalysis";
+import { UsersBoxSkeleton } from "../../../common/skeleton";
 import { SectionKey} from "@/types";
 import { dashboardApi } from "@/lib/api";
 

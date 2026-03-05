@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, UserCheck, UserX, ShieldCheck } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { UsersSkeleton } from '../skeleton';
+import { UsersSkeleton } from '../../../common/skeleton';
 import type { StaffType, StaffFilter } from '@/types';
 import { staffApi } from '@/lib/api';
 

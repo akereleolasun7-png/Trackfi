@@ -1,6 +1,6 @@
 "use client";
 import { useUser } from "@/context/UserContext";
-import AdminComponent from '@/components/dashboard/admin/users'
+import AdminComponent from '@/components/dashboard/admin/dashboard/adminDashboard'
 import StaffComponent from '@/components/dashboard/staff/orders'
 export default function AdminHomePage() {
   const { user, staff } = useUser();

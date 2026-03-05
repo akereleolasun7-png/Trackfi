@@ -41,9 +41,9 @@ export default function Page() {
          <Image
            src="/logos/savory_icon.png"
            alt="Savory logo"
-           width={320}
-           height={320}
-           className="mb-6 invert"
+           width={160}
+           height={160}
+           className="mb-4 invert"
            priority
          />
      

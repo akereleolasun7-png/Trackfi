@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import NavbarDashboard from "@/components/dashboard/navbarDashboard";
+import NavbarDashboard from "@/components/dashboard/shared/navbarDashboard";
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
 

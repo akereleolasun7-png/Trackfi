@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminMenuApi } from "@/lib/api";
-import { BooksSkeleton } from "@/components/dashboard/skeleton";
-import { CardContent, CardFooter } from "../ui/card";
-import { Button } from "../ui/button";
+import { BooksSkeleton } from "@/components/common/skeleton";
+import { CardContent, CardFooter } from "../../../ui/card";
+import { Button } from "../../../ui/button";
 import { toast } from "sonner";
-import MediaDisplay from "./mediaDisplay";
+import MediaDisplay from "../../../common/mediaDisplay";
 import { MenuItem } from "@/types";
-import EditMenuCard from '@/components/menu/editMenuCard';
+import EditMenuCard from '@/components/dashboard/admin/menu/editMenuCard';
 
 const ITEMS_PER_PAGE = 10; 
 

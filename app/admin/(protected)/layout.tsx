@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { UserProvider } from "@/context/UserContext";
-import InactiveAccount from "@/components/dashboard/InactiveStaff";
+import InactiveAccount from "@/components/dashboard/staff/InactiveStaff";
 import { Providers } from "@/provider";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/dashboard/sidebar"
-import NavbarDashboard from "@/components/dashboard/navbarDashboard"
+import { AppSidebar } from "@/components/dashboard/shared/sidebar"
+import NavbarDashboard from "@/components/dashboard/shared/navbarDashboard"
 export default async function AdminLayout({ 
   children 
 }: { 

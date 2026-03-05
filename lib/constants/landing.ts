@@ -7,12 +7,12 @@ export const homePage = {
   description: "The future of dining is contactless and effortless. Experience the premium standard of service with zero wait times.",
   btn: "Get Started",
   getMore: "Learn More",
-  images: [
-    "https://res.cloudinary.com/dkolikr3y/image/upload/v1771913576/12_Fancy_Gift_Basket_Ideas_for_Housewarming_That_Make_New_Homes_Feel_Like_Luxury_Hotels_o4aj0g.jpg",
-    "https://res.cloudinary.com/dkolikr3y/image/upload/v1771913577/Pan_Seared_Filet_Mignon_with_Red_Wine_Sauce_suwrmn.jpg",
-    "https://res.cloudinary.com/dkolikr3y/image/upload/v1771913576/download_nzxge0.jpg",
-    "https://res.cloudinary.com/dkolikr3y/image/upload/v1771913575/food__foodie__food_lover__delicious__street_food__kitty__kitten_oivb6e.jpg"
-  ]
+  // images: [
+  //   "https://res.cloudinary.com/dkolikr3y/image/upload/v1771913576/12_Fancy_Gift_Basket_Ideas_for_Housewarming_That_Make_New_Homes_Feel_Like_Luxury_Hotels_o4aj0g.jpg",
+  //   "https://res.cloudinary.com/dkolikr3y/image/upload/v1771913577/Pan_Seared_Filet_Mignon_with_Red_Wine_Sauce_suwrmn.jpg",
+  //   "https://res.cloudinary.com/dkolikr3y/image/upload/v1771913576/download_nzxge0.jpg",
+  //   "https://res.cloudinary.com/dkolikr3y/image/upload/v1771913575/food__foodie__food_lover__delicious__street_food__kitty__kitten_oivb6e.jpg"
+  // ]
 };
 
 export const tables = {

@@ -1,5 +1,5 @@
 {
-  "name": "parcelbot_delivary_app",
+  "name": "restaurant_ordering_app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -54,6 +54,7 @@
     "react-dom": "19.1.0",
     "react-hook-form": "^7.68.0",
     "react-responsive": "^10.0.1",
+    "recharts": "^3.7.0",
     "resend": "^6.6.0",
     "socket.io-client": "^4.8.3",
     "sonner": "^2.0.7",

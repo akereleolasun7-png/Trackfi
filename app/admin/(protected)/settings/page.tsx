@@ -1,5 +1,5 @@
 import React from 'react'
-import AdminSettings from '@/components/settings/admin/AdminSettings'
+import AdminSettings from '@/components/dashboard/admin/settings/AdminSettings'
 function page() {
   return (
     <>

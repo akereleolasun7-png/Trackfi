@@ -13,7 +13,7 @@ const Hero = () => {
   const btnRef = useGsapFadeUp({ scroll: false, delay: 0.4 });
   const imagesRef = useGsapFadeRight({ scroll: false, delay: 0.5 })
   return (
-    <div className="relative mt-16 min-h-[70vh] lg:min-h-screen overflow-hidden">
+    <div className="relative mt-0 min-h-[70vh] md:min-h-screen overflow-hidden">
 
   {/* Background image */}
   <div className="absolute inset-0 z-0">
@@ -29,7 +29,7 @@ const Hero = () => {
   </div>
 
   {/* Content */}
-  <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 lg:py-16 flex flex-col items-center justify-center min-h-[70vh] text-center">
+  <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-16 lg:py-16 flex flex-col items-center justify-center min-h-screen text-center">
     <h1 ref={titleRef} className="text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight text-white">
       Scan.<br />
       Order.<br />
@@ -42,12 +42,12 @@ const Hero = () => {
 
     <div ref={btnRef} className="mt-8 flex flex-col sm:flex-row gap-4">
       <Link href="/tables">
-        <button className="bg-[#16A34A] hover:bg-[#15803D] text-white font-semibold px-6 py-3.5 rounded-full transition-colors">
+        <button className="bg-[#16A34A] hover:bg-[#15803D] text-white font-semibold px-6 py-3.5 rounded-full transition-colors cursor-pointer">
           {homePage.btn} →
         </button>
       </Link>
       <Link href="#about">
-        <button className="bg-white/10 border border-white/30 text-white font-semibold px-6 py-3.5 rounded-full flex items-center justify-center gap-2 hover:bg-white/20 transition-colors backdrop-blur-sm">
+        <button className="bg-white/10 border border-white/30 text-white font-semibold px-6 py-3.5 rounded-full flex items-center justify-center gap-2 hover:bg-white/20 transition-colors backdrop-blur-sm cursor-pointer">
           <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center">
             <svg className="w-2.5 h-2.5 fill-black" viewBox="0 0 10 10">
               <polygon points="3,1 9,5 3,9" />

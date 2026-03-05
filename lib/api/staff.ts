@@ -1,12 +1,12 @@
 export const staffApi = {
   getAll: async () => {
-    const res = await fetch('/api/admin/staff');
+    const res = await fetch('/api/admin/staffs');
     if (!res.ok) throw new Error('Failed to fetch staff');
     return res.json();
   },
 
   promote: async (staffId: string) => {
-    const res = await fetch('/api/admin/staff/promote', {
+    const res = await fetch('/api/admin/staffs/promote', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ staffId }),
@@ -16,7 +16,7 @@ export const staffApi = {
   },
 
   activate: async (staffId: string) => {
-    const res = await fetch('/api/admin/staff/activate', {
+    const res = await fetch('/api/admin/staffs/activate', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ staffId }),
@@ -26,7 +26,7 @@ export const staffApi = {
   },
 
   deactivate: async (staffId: string) => {
-    const res = await fetch('/api/admin/staff/deactivate', {
+    const res = await fetch('/api/admin/staffs/deactivate', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ staffId }),

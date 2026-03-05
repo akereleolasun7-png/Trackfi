@@ -1,11 +1,10 @@
 // lib/api/settings.ts
 import {
   RestaurantSettings,
-  ApiResponse,
-} from '@/types/settings';
+} from '@/types';
 
 export const settingsApi = {
-  getSettings: async (): Promise<ApiResponse<RestaurantSettings>> => {
+  getSettings: async (): Promise<RestaurantSettings> => {
     const res = await fetch('/api/admin/settings');
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
@@ -14,7 +13,7 @@ export const settingsApi = {
     return res.json();
   },
   
-  paymentChange: async (order_code: number): Promise<ApiResponse<RestaurantSettings>> => { 
+  paymentChange: async (order_code: number): Promise<RestaurantSettings> => { 
     const res = await fetch('/api/admin/settings/payment-code', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -32,7 +31,7 @@ export const settingsApi = {
     return result;
   },
   
-  tableNumberChange: async (table_count: number): Promise<ApiResponse<RestaurantSettings>> => { 
+  tableNumberChange: async (table_count: number): Promise<RestaurantSettings> => { 
     const res = await fetch('/api/admin/settings/tablenumber', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
