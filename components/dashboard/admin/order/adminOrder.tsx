@@ -4,10 +4,10 @@ import { adminOrderApi } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { createClient } from '@/utils/supabase/client';
-import { TimeFilter, TIME_FILTERS, StatusFilter, OrderItem, OrderStatus, ORDER_STATUSES } from '@/types';
+import { TimeFilter, TIME_FILTERS, StatusFilter, OrderItem, OrderStatus, ORDER_STATUSES, Order } from '@/types';
 import { AnalyticsSkeleton } from '@/components/common/skeleton';
 import { Clock, ChefHat, PackageCheck, CheckCircle2, XCircle } from 'lucide-react';
-
+import OrderItemsModal from './orderItemsModal';
 const STATUS_CONFIG = {
   pending: { label: 'Pending', icon: Clock, color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-200', dot: 'bg-yellow-400' },
   preparing: { label: 'Preparing', icon: ChefHat, color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-200', dot: 'bg-blue-400 animate-pulse' },
@@ -20,6 +20,7 @@ export default function AdminOrders() {
   const queryClient = useQueryClient();
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('today');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -128,9 +129,10 @@ export default function AdminOrders() {
             const config = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.pending;
             const Icon = config.icon;
             const tableNumber = order.table_sessions?.tables?.table_number ?? '—';
+            const extraItems = (order.order_items?.length ?? 0) - 3;
 
             return (
-              <div key={order.id} className={`rounded-2xl border ${config.border} ${config.bg} p-4 space-y-3`}>
+              <div key={order.id} className={`rounded-2xl border ${config.border} ${config.bg} p-4 flex flex-col`}>
                 {/* Header */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -143,9 +145,9 @@ export default function AdminOrders() {
                   </div>
                 </div>
 
-                {/* Items */}
-                <div className="space-y-1.5">
-                  {order.order_items?.map((item: OrderItem) => {
+                {/* Items — max 3 */}
+                <div className="space-y-1.5 flex-1 py-3">
+                  {order.order_items?.slice(0, 3).map((item: OrderItem) => {
                     const menu = Array.isArray(item.menu_items) ? item.menu_items[0] : item.menu_items;
                     return (
                       <div key={item.id} className="flex justify-between text-sm">
@@ -154,24 +156,33 @@ export default function AdminOrders() {
                       </div>
                     );
                   })}
+
+                  {extraItems > 0 && (
+                    <button
+                      onClick={() => setSelectedOrder(order)}
+                      className="text-xs text-[#16A34A] hover:underline mt-1"
+                    >
+                      +{extraItems} more items →
+                    </button>
+                  )}
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-between items-center pt-2 border-t border-black/5">
+                <div className="flex justify-between items-center pt-2 border-t border-black/5 mt-auto">
                   <p className="text-xs text-gray-400">
                     {new Date(order.created_at).toLocaleString([], {
                       month: 'short',
                       day: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit',
-                      hour12: true // Optional: change to false for 24h format
+                      hour12: true
                     })}
                   </p>
                   <span className="text-sm font-bold text-gray-800">₦{order.total_amount?.toLocaleString()}</span>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 pt-1">
+                <div className="flex items-center gap-2 pt-2">
                   <select
                     value={order.status}
                     onChange={(e) => updateStatusMutation.mutate({
@@ -198,6 +209,14 @@ export default function AdminOrders() {
             );
           })}
         </div>
+      )}
+
+      {/* Modal */}
+      {selectedOrder && (
+        <OrderItemsModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
       )}
     </div>
   );

@@ -44,9 +44,9 @@ export default function NavbarDashboard({
         >
           <ClipboardList className="h-5 w-5 shrink-0" />
           <span className="hidden sm:inline text-sm">Orders</span>
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+          {/* <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
             2
-          </span>
+          </span> */}
         </Link>
 
         <Link

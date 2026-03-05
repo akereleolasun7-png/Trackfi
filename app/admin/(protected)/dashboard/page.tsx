@@ -1,7 +1,7 @@
 "use client";
 import { useUser } from "@/context/UserContext";
 import AdminComponent from '@/components/dashboard/admin/dashboard/adminDashboard'
-import StaffComponent from '@/components/dashboard/staff/orders'
+import StaffComponent from '@/components/dashboard/staff/staffDashboard'
 export default function AdminHomePage() {
   const { user, staff } = useUser();
 
@@ -14,7 +14,7 @@ export default function AdminHomePage() {
     : 
     
         <>
-              <StaffComponent/>    <h1>Welcome, dd {staff.email} dd</h1> 
+              <StaffComponent/>
           
         </>
     }

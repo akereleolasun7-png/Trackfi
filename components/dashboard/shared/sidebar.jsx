@@ -43,7 +43,7 @@ export const adminItems = [
 ];
 
 export const staffItems = [
-  { title: "Dashboard", url: "/staff/dashboard", icon: Home },
+  { title: "Dashboard", url: "/admin/dashboard", icon: Home },
   { title: "Active Orders", url: "/staff/orders", icon: ShoppingCart },
   { title: "Menu", url: "/staff/menu", icon: MenuIcon },
   { title: "My Shifts", url: "/staff/shifts", icon: Clock },
@@ -74,28 +74,25 @@ export function AppSidebar({ userRole }) {
 
   return (
     <Sidebar
-  collapsible="icon"
-  className="h-screen shadow-xl transition-all duration-200
+      collapsible="icon"
+      className="h-screen shadow-xl transition-all duration-200
   bg-[#16A34A]/90 dark:bg-[#16A33D]/95 border-r border-white/10"
->
+    >
       {/* ---------- HEADER ---------- */}
-      <div className="flex items-center p-6 ">
+      <div className={`flex items-center ${isCollapsed ? 'pt-10' : 'p-0'}`}>
         {!isCollapsed && (
           <Link href="/">
-            <div className="flex items-center">
-              <Image
-                src="/logos/savory_icon.png"
-                alt="Savory & co logo"
-                width={120}
-                height={120}
-                priority
-                className="object-contain"
-              />
-            </div>
+            <Image
+              src="/logos/savory_icon.png"
+              alt="Savory & co logo"
+              width={120}
+              height={120}
+              priority
+              className="object-contain"
+            />
           </Link>
         )}
       </div>
-
       {/* ---------- NAVIGATION ---------- */}
       <SidebarContent className="flex-1">
         <SidebarGroup>

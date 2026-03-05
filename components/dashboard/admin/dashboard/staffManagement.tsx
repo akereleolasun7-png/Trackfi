@@ -64,7 +64,6 @@ const StaffManagement = () => {
   // Filter staff
   const filteredStaff = staff?.filter((member: StaffType) => {
     const matchesSearch = 
-      member.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
       member.email?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesFilter = 
