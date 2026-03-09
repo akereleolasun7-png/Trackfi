@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { ShoppingCart, ClipboardList, Menu } from "lucide-react"
+import { ShoppingCart, Clipboard, UtensilsCrossed } from "lucide-react"
 import Image from "next/image"
 import { useQuery } from "@tanstack/react-query"
 import { OrderWithItems, CartItem } from "@/types"
@@ -48,18 +48,18 @@ export default function NavbarDashboard({
           <div className="flex items-center gap-1 sm:gap-4">
             <Link
               href={`/menu/${tableNumber}`}
-              className="flex items-center gap-1 px-2 py-2 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition"
+              className="flex items-center gap-1 px-2 py-2 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition cursor-pointer"
             >
-              <Menu className="h-5 w-5 shrink-0" />
-              <span className="hidden sm:inline text-sm">Menu</span>
+              <UtensilsCrossed className="h-5 w-5 shrink-0 hidden sm:inline" />
+              <span className="inline text-xs">Menu</span>
             </Link>
 
             <Link
               href={`/orders/${tableNumber}`}
-              className="relative flex items-center gap-1 px-2 py-2 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition"
+              className="relative flex items-center gap-1 px-2 py-2 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition cursor-pointer"
             >
-              <ClipboardList className="h-5 w-5 shrink-0" />
-              <span className="hidden sm:inline text-sm">Orders</span>
+              <Clipboard className="h-5 w-5 shrink-0 hidden sm:inline" />
+              <span className="inline text-xs">Orders</span>
               {orderCount > 0 && (
                 <span className="absolute top-0 left-0 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {orderCount}
@@ -69,10 +69,10 @@ export default function NavbarDashboard({
 
             <Link
               href={`/cart/${tableNumber}`}
-              className="relative flex items-center gap-1 px-2 py-2 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition"
+              className="relative flex items-center gap-1 px-2 py-2 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition cursor-pointer"
             >
-              <ShoppingCart className="h-5 w-5 shrink-0" />
-              <span className="hidden sm:inline text-sm">Cart</span>
+              <ShoppingCart className="h-5 w-5 shrink-0 " />
+              <span className="hidden text-xs sm:inline ">Cart</span>
               {cartCount > 0 && (
                 <span className="absolute top-0 left-0 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {cartCount}
