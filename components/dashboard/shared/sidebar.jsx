@@ -31,6 +31,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSidebarStore } from "@/store/useSidebarStore";
+import { useIsMobile } from "@/hooks/use-mobile";
 // -------------------- MENUS --------------------
 
 export const adminItems = [
@@ -64,7 +65,10 @@ export const userItems = [
 export function AppSidebar({ userRole }) {
   const { isOpen } = useSidebarStore()
   const { setOpen } = useSidebar();
+  const isMobile = useIsMobile();
 
+  // use shadcn's open state for rendering, not just Zustand
+  const showText = isMobile ? true : isOpen;
   // Sync shadcn with Zustand
   useEffect(() => {
     setOpen(isOpen)
@@ -85,7 +89,7 @@ export function AppSidebar({ userRole }) {
     >
       {/* ---------- HEADER ---------- */}
       <div className={`flex  items-center justify-center ${!isOpen ? 'pt-10' : 'p-0'}`}>
-        {isOpen && (
+        {showText && (
           <Link href="/">
             <Image
               src="/logos/savory_icon.png"
@@ -101,7 +105,7 @@ export function AppSidebar({ userRole }) {
       {/* ---------- NAVIGATION ---------- */}
       <SidebarContent className="flex-1">
         <SidebarGroup>
-          {isOpen && (
+          {showText && (
             <SidebarGroupLabel className="text-xs font-semibold text-white/70 uppercase tracking-wider px-3">
               Navigation
             </SidebarGroupLabel>
@@ -120,11 +124,11 @@ export function AppSidebar({ userRole }) {
                             className={`group flex items-center gap-3 p-3 rounded-lg
                             text-white transition-colors
                             hover:bg-white/10
-                            ${!isOpen ? "justify-center" : ""}`}
+                            ${!showText ? "justify-center" : ""}`}
                           >
                             <item.icon size={20} className="text-white" />
 
-                            {isOpen && (
+                            {showText && (
                               <span className="font-medium">
                                 {item.title}
                               </span>
