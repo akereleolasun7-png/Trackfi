@@ -7,7 +7,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useGsapFadeUp, useGsapFadeRight } from '@/hooks/useGsapAnimation';
 const Hero = () => {
   const isMobile = useIsMobile();
-  // refs
   const titleRef = useGsapFadeUp({ scroll: false, delay: 0 });
   const descRef = useGsapFadeUp({ scroll: false, delay: 0.2 });
   const btnRef = useGsapFadeUp({ scroll: false, delay: 0.4 });

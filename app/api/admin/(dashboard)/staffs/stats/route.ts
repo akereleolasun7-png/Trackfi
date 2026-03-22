@@ -10,13 +10,12 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get today's date range
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // Get week start for revenue trend
+
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - 7);
 

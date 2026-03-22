@@ -5,13 +5,13 @@ export async function GET(req: NextRequest) {
   
   try {
     const supabase = await createClient()
-    // verify admin 
+    
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    //   get menus from supabase
+    
     const url = new URL(req.url);
-     const limit = Number(url.searchParams.get('limit')) || 10; // default 10
+     const limit = Number(url.searchParams.get('limit')) || 10; 
     const offset = Number(url.searchParams.get('offset')) || 0;
 
     const { data: menus, error } = await supabase
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Transform to match frontend expectations (_id instead of id)
+  
     const transformedMenus = menus.map(m => ({
       _id: m.id,
       price: m.price,

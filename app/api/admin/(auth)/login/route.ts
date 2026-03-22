@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
 
     
     if (error) {
-      // Check if it's an email confirmation error
       if (error.message.toLowerCase().includes("email not confirmed")) {
         return NextResponse.json(
           { 
@@ -36,7 +35,7 @@ export async function POST(req: NextRequest) {
           { status: 401 }
         );
       }
-        // Check for invalid credentials
+        
       if (error) {
         return NextResponse.json(
           { error: "Invalid email or password" },

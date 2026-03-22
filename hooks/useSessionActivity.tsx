@@ -18,7 +18,7 @@ export function useSessionActivity({
 
   const lastUpdateRef = useRef(0);
 
-  // 🔹 Validate session (only for page load / manual checks)
+  
   const { refetch: validate } = useQuery({
     queryKey: ['session', 'validate'],
     queryFn: sessionsApi.validateSession,
@@ -26,7 +26,6 @@ export function useSessionActivity({
     retry: false,
   });
 
-  // 🔹 Heartbeat mutation
   const heartbeat = useMutation({
     mutationFn: sessionsApi.heartbeat,
     onError: (error: Error) => {
@@ -38,12 +37,12 @@ export function useSessionActivity({
     },
   });
 
-  // 🔥 On mount → validate once
+  
   useEffect(() => {
     validate();
   }, [validate]);
 
-  // 🔥 Activity tracking → heartbeat only
+  
   useEffect(() => {
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
 

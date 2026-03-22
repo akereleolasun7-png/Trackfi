@@ -121,7 +121,7 @@ export default function OrdersPage({ params }: PageProps) {
   const { data: orders = [], isLoading,isError, error } = useQuery<OrderWithItems[]>({
     queryKey: ['orders', tableNumber],
     queryFn: () => orderApi.getOrders(),
-    refetchInterval: 30 * 1000, // poll every 30s for status updates
+    refetchInterval: 30 * 1000, // 30sec
     retry: 1,
   });
   useNetworkError(!!isError, error, 'Failed to load orders');

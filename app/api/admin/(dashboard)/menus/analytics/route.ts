@@ -12,7 +12,6 @@ export async function GET() {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Top selling items from order_items joined with menu_items
     const { data: topItems, error: topError } = await supabase
       .from('order_items')
       .select(`
@@ -47,7 +46,6 @@ export async function GET() {
       .sort((a, b) => b.orders - a.orders)
       .slice(0, 5);
 
-    // Low/unavailable items
     const { data: unavailable, error: unavailableError } = await supabase
       .from('menu_items')
       .select('id, name, category')

@@ -11,7 +11,7 @@ export const adminOrderApi = {
     }
     return res.json();
   },
-  // adminOrderApi additions
+  
 updateStatus: async (orderId: string, status: string) => {
   const res = await fetch(`/api/admin/orders/status`, {
     method: 'PUT',

@@ -32,7 +32,6 @@ async function uploadMediaToCloudinary(file: File, folder: string) {
     const isVideo = file.type.startsWith("video/");
     const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
 
-    // ✅ Fix — add return and fix status code
     if (file.size > maxSize) {
       throw new Error(isVideo ? 'Video must be under 50MB' : 'Image must be under 2MB');
     }
@@ -51,9 +50,9 @@ async function uploadMediaToCloudinary(file: File, folder: string) {
     const result = await cloudinary.uploader.upload(dataUri, {
       folder: folderPath,
       transformation: [
-        { width: 800, height: 600, crop: 'fill' }, // resize
-        { quality: 'auto' },                        // compress
-        { fetch_format: 'auto' },                   // webp/avif automatically
+        { width: 800, height: 600, crop: 'fill' },
+        { quality: 'auto' },                       
+        { fetch_format: 'auto' },                  
       ],
       resource_type: isVideo ? "video" : "image",
       timeout: isVideo ? 120_000 : 60_000,

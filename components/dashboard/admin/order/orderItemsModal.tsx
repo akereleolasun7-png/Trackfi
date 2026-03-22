@@ -1,4 +1,3 @@
-// components/dashboard/admin/orders/OrderItemsModal.tsx
 import { OrderItem, Order } from '@/types';
 import { XCircle } from 'lucide-react';
 

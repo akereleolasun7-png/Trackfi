@@ -61,7 +61,7 @@ export function SignUpForm() {
         toast.error(result.error || "Signup failed", { id: toastId });
       } else {
         toast.success(SignupContent.success,{ id: toastId });
-         // Redirect to email verification page instead of login
+         
         router.push(`/admin/verify-email?email=${encodeURIComponent(email)}`);
       }
     } catch {

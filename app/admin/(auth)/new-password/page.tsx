@@ -35,7 +35,6 @@ export default function NewPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState<string | null>(null);
 
-  // Extract code from URL on component mount
   useEffect(() => {
     const codeFromUrl = searchParams.get("code");
     
@@ -50,13 +49,11 @@ export default function NewPasswordPage() {
   async function handleSetPassword(e: FormEvent) {
     e.preventDefault();
 
-    // Validate passwords match
     if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match" );
       return;
     }
 
-    // Validate password length
     if (newPassword.length < 6) {
       toast.error("Password must be at least 6 characters");
       return;
@@ -86,7 +83,6 @@ export default function NewPasswordPage() {
 
       toast.success(data.message || cfg.success, { id: toastId });
       
-      // Redirect to login after successful password reset
       setTimeout(() => {
         router.push("/admin/login");
       }, 1500);
@@ -98,7 +94,6 @@ export default function NewPasswordPage() {
     }
   }
 
-  // Show loading state while checking for code
   if (!code) {
     return (
       <div className="w-full h-full flex items-center justify-center">

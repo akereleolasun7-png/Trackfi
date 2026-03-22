@@ -1,4 +1,3 @@
-// app/api/admin/settings/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import {updateRestaurantSettingsSchema} from '@/lib/validations/settings'
@@ -13,14 +12,14 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { order_code } = updateRestaurantSettingsSchema.parse(body);
     
-    // Validate inputs
+    
     if (order_code && !/^\d{4}$/.test(order_code.toString())) {
       return NextResponse.json(
         { success: false, error: 'Order code must be exactly 4 digits' },
         { status: 400 }
       );
     }
-    // Get current restaurant first
+    
     const { data: currentRestaurant } = await supabase
       .from('restaurant')
       .select('id')
@@ -34,7 +33,7 @@ export async function PUT(req: NextRequest) {
       );
     }
     
-    // Build update object - only update fields that were sent
+    
     const updateData: Record<string, string | number | boolean> = {
       updated_at: new Date().toISOString()
     };
@@ -44,7 +43,7 @@ export async function PUT(req: NextRequest) {
     }
 
     
-    // Update restaurant
+  
     const { data: restaurant, error } = await supabase
       .from('restaurant')
       .update(updateData)

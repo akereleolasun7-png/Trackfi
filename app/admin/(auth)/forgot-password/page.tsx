@@ -33,7 +33,6 @@ export default function Page() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // form fields
   const [email, setEmail] = useState("");
   
   const [emailVerified, setEmailVerified] = useState(false);

@@ -1,4 +1,3 @@
-// lib/api/orders.ts
 import { CheckoutResponse, Order, OrderWithItems } from "@/types";
 
 export const orderApi = {

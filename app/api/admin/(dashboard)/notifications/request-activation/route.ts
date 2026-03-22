@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Fetch staff info
+  
   const { data: staff, error: staffError } = await supabase
     .from('staff')
     .select('id, email, role')
@@ -47,15 +47,15 @@ export async function POST(request: NextRequest) {
     .select('id')
     .eq('role', 'admin')
     .eq('is_active', true)
-    .single();  // ← Get single admin
+    .single(); 
 
   if (!admin) {
     return NextResponse.json({ error: "No active admin found" }, { status: 404 });
   }
 
-  // Create notification for the admin
+
   const notification = {
-    staff_id: admin.id,      // ← Now admin is defined
+    staff_id: admin.id,  
     requester_id: staff.id,
     type: 'activation_request',
     title: 'Account Activation Request',

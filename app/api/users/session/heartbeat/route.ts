@@ -1,8 +1,7 @@
-// app/api/users/session/heartbeat/route.ts
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-// Constants - keep these consistent across all endpoints
+
 import { SESSION_DURATION, INACTIVITY_THRESHOLD } from '@/lib/constants/sessions';
 
 export async function POST() {
@@ -29,7 +28,6 @@ export async function POST() {
   const expiresAt = new Date(session.expires_at);
   const lastActivity = new Date(session.last_activity);
 
-  // Expiration check
   if (now > expiresAt) {
     await supabase
       .from('table_sessions')
@@ -50,7 +48,6 @@ export async function POST() {
     return NextResponse.json({ error: "Session expired" }, { status: 401 });
   }
 
-  // Inactivity check
   if (now.getTime() - lastActivity.getTime() > INACTIVITY_THRESHOLD) {
     await supabase
       .from('table_sessions')
@@ -71,7 +68,6 @@ export async function POST() {
     return NextResponse.json({ error: "Session inactive" }, { status: 401 });
   }
 
-  // ✅ Only update if still valid
   await supabase
     .from('table_sessions')
     .update({ last_activity: now.toISOString() })

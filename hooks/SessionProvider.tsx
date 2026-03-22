@@ -24,10 +24,10 @@ export default function SessionProvider({ children, tableNumber }: SessionProvid
     });
 
     try {
-      await sessionsApi.startSession(tableNumber); // ← start directly, no redirect needed
-      router.refresh(); // ← just refresh current page with new session
+      await sessionsApi.startSession(tableNumber);
+      router.refresh(); 
     } catch {
-      router.replace(`/menu/${tableNumber}`); // ← fallback if start fails
+      router.replace(`/menu/${tableNumber}`); 
     } finally {
       setIsRefreshing(false);
     }

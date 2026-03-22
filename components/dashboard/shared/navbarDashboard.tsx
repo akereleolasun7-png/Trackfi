@@ -19,7 +19,6 @@ export default function NavbarDashboard({ user, pageTitle = "dashboard" }: Navba
     const { state, isMobile } = useSidebar()
     const sidebarWidth = state === "expanded" ? "16rem" : "3rem"
     const userMenuRef = useRef<HTMLDivElement>(null)
-    // In NavbarDashboard
     const { toggle } = useSidebarStore()
     const { toggleSidebar } = useSidebar()
 

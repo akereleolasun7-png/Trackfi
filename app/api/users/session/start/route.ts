@@ -1,8 +1,6 @@
-// app/api/users/session/start/route.ts
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-// Constants - keep these consistent across all endpoints
 import { SESSION_DURATION, INACTIVITY_THRESHOLD } from '@/lib/constants/sessions';
 
 export async function POST(request: Request) {
@@ -20,7 +18,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Table not found" }, { status: 404 });
   }
 
-  // Check for existing active session
   const { data: existingSession } = await supabase
     .from('table_sessions')
     .select('*')
@@ -33,12 +30,10 @@ export async function POST(request: Request) {
     const expiresAt = new Date(existingSession.expires_at);
     const lastActivity = new Date(existingSession.last_activity);
     
-    // Use consistent threshold - 15 minutes
     const isExpired = now > expiresAt;
     const isInactive = now.getTime() - lastActivity.getTime() > INACTIVITY_THRESHOLD;
     
     if (isExpired || isInactive) {
-      // Expire the old session
       await supabase
         .from('table_sessions')
         .update({ 
@@ -48,15 +43,15 @@ export async function POST(request: Request) {
         })
         .eq('id', existingSession.id);
       
-      // Mark table as unoccupied
+    
       await supabase
         .from('tables')
         .update({ is_occupied: false })
         .eq('id', table.id);
       
-      // Continue to create new session below
+     
     } else {
-      // Session is still valid, update and return it
+    
       const cookieStore = await cookies();
       cookieStore.set('session_token', existingSession.session_token, {
         httpOnly: true,
@@ -68,8 +63,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ session: existingSession });
     }
   }
-
-  // Create new session
+ //  start the session for users 
   const session_token = crypto.randomUUID();
   const now = new Date();
 
@@ -91,7 +85,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: sessionError.message }, { status: 500 });
   }
 
-  // Mark table as occupied
   await supabase
     .from('tables')
     .update({ is_occupied: true })

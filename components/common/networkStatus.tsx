@@ -5,7 +5,6 @@ import { WifiOff, Wifi } from 'lucide-react'
 
 export default function NetworkStatus() {
   useEffect(() => {
-    // Check if already offline when component mounts
     if (!navigator.onLine) {
       toast.error('You are offline', {
         id: 'network-status',

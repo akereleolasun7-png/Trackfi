@@ -24,7 +24,6 @@ export default function AdminDashboard() {
       <UsersBoxSkeleton/>
     );
   }
-  // ✅ Handle error state
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">

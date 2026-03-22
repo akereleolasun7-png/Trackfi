@@ -2,7 +2,7 @@ import { Worker } from "bullmq";
 import Redis from "ioredis";
 import { Resend } from "resend";
 
-// Validate environment
+
 if (!process.env.REDIS_URL) {
   throw new Error("REDIS_URL is required");
 }
@@ -11,16 +11,16 @@ if (!process.env.RESEND_API_KEY) {
   throw new Error("RESEND_API_KEY is required");
 }
 
-// Redis connection
+
 const connection = new Redis(process.env.REDIS_URL, {
   maxRetriesPerRequest: null,
   tls: {},
 });
 
-// Resend client
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Worker
+
 const worker = new Worker(
   "emailQueue",
   async (job) => {
@@ -74,7 +74,7 @@ worker.on("failed", (job, err) => {
 
 console.log("🚀 Email worker started with Resend");
 
-// Graceful shutdown
+
 process.on("SIGTERM", async () => {
   await worker.close();
   connection.quit();

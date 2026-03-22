@@ -39,7 +39,8 @@ export async function GET() {
     const thisMonth = orders
       ?.reduce((sum, o) => sum + (o.total_amount ?? 0), 0) ?? 0;
 
-    // Group by day for chart
+
+
     const dailyMap: Record<string, number> = {};
     orders?.forEach(o => {
       const date = new Date(o.created_at).toLocaleDateString('en-GB', {
@@ -50,7 +51,7 @@ export async function GET() {
 
     const dailyRevenue: { date: string; revenue: number }[] = Object.entries(dailyMap)
       .map(([date, revenue]) => ({ date, revenue }))
-      .slice(-7); // last 7 days
+      .slice(-7); 
 
     return NextResponse.json({ today, thisWeek, thisMonth, dailyRevenue }, { status: 200 });
 

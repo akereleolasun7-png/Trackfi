@@ -1,14 +1,13 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import { DM_Serif_Text } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 const dmSerifText = DM_Serif_Text({
-  weight: ["400"], // Regular weight
+  weight: ["400"],
   style: ["normal", "italic"],
   subsets: ["latin"],
   variable: "--font-dm-serif",
-  display: "swap", // Better performance
+  display: "swap", 
 });
 
 export const metadata: Metadata = {

@@ -31,7 +31,6 @@ export default function NavbarDashboard({ tableNumber }: NavbarProps) {
 
   const orderCount = orders?.length ?? 0
 
-  // mobile menu
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 

@@ -1,8 +1,8 @@
 'use client';
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { cartApi , orderApi} from '@/lib/api';
+import { cartApi, orderApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus, ShoppingBag, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -20,14 +20,13 @@ function CartPage({ params }: PageProps) {
   const tableNumber = Number(paramsData.table);
   const queryClient = useQueryClient();
 
-  // Track which item is being modified
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const router = useRouter();
-  
+
   const {
     data: cart = [],
-    isLoading,isError,
+    isLoading, isError,
     error,
   } = useQuery({
     queryKey: ['cart', tableNumber],
@@ -38,15 +37,15 @@ function CartPage({ params }: PageProps) {
   useNetworkError(!!isError, error, 'Failed to load cart');
 
   useEffect(() => {
-  if (!error) return;
-  if (error instanceof Error && error.message === 'Session expired') {
-    toast.error('Session not found', {
-      description: 'Your session has ended. Refreshing...',
-      duration: 3000,
-    });
-    setTimeout(() => router.replace(`/menu/${tableNumber}`), 2000);
-  }
-}, [error, router, tableNumber]);
+    if (!error) return;
+    if (error instanceof Error && error.message === 'Session expired') {
+      toast.error('Session not found', {
+        description: 'Your session has ended. Refreshing...',
+        duration: 3000,
+      });
+      setTimeout(() => router.replace(`/menu/${tableNumber}`), 2000);
+    }
+  }, [error, router, tableNumber]);
 
   const { mutate: removeFromCart } = useMutation({
     mutationFn: (cartItemId: string) => cartApi.removeFromCart(cartItemId),
@@ -71,7 +70,7 @@ function CartPage({ params }: PageProps) {
       setUpdatingId(cartItemId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart' , tableNumber] });
+      queryClient.invalidateQueries({ queryKey: ['cart', tableNumber] });
     },
     onError: (error: Error) => {
       toast.error('Failed to update quantity', { description: error.message });
@@ -86,7 +85,7 @@ function CartPage({ params }: PageProps) {
     },
     onSuccess: (data) => {
       toast.dismiss('order-toast');
-      window.location.href = data.url; // redirect to Stripe
+      window.location.href = data.url;
     },
     onError: (error: Error) => {
       toast.error('Failed to start checkout', { id: 'order-toast', description: error.message });
@@ -99,19 +98,18 @@ function CartPage({ params }: PageProps) {
   );
 
   if (isLoading) return <CartSkeleton />;
-  
-    if (error) {
-  // if session expired, show nothing — useEffect is handling the redirect
-  if (error instanceof Error && error.message === 'Session expired') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mx-auto mb-4" />
-          <p className="text-gray-600">Session ended. Redirecting...</p>
+
+  if (error) {
+    if (error instanceof Error && error.message === 'Session expired') {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mx-auto mb-4" />
+            <p className="text-gray-600">Session ended. Redirecting...</p>
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-red-500">Failed to load cart</p>
@@ -145,9 +143,8 @@ function CartPage({ params }: PageProps) {
           return (
             <div
               key={item._id}
-              className={`flex items-center gap-4 bg-white rounded-2xl border p-4 shadow-sm transition-opacity duration-200 ${
-                isItemRemoving ? 'opacity-40 pointer-events-none' : 'opacity-100'
-              }`}
+              className={`flex items-center gap-4 bg-white rounded-2xl border p-4 shadow-sm transition-opacity duration-200 ${isItemRemoving ? 'opacity-40 pointer-events-none' : 'opacity-100'
+                }`}
             >
               {/* Media */}
               {(item.image_url || item.video_url) && (
@@ -238,11 +235,11 @@ function CartPage({ params }: PageProps) {
             <span>Total</span>
             <span className="text-blue-600">₦{total.toLocaleString()}</span>
           </div>
-        <Button
-          className="w-full h-12 bg-[#16A34A] text-white font-semibold rounded-xl hover:hover:bg-[#15803D]/80 cursor-pointer"
-          onClick={() => placeOrder()}
-          disabled={isPlacingOrder || cart.length === 0}
-        >
+          <Button
+            className="w-full h-12 bg-[#16A34A] text-white font-semibold rounded-xl hover:hover:bg-[#15803D]/80 cursor-pointer"
+            onClick={() => placeOrder()}
+            disabled={isPlacingOrder || cart.length === 0}
+          >
             {isPlacingOrder ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />

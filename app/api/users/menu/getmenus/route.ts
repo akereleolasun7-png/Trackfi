@@ -1,4 +1,4 @@
-// /api/menus/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       .select('id,price,name,category,description,image_url,video_url,is_available,created_at,is_veg ,is_vegan')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
-      // for the pagination we need the total count of available menu items to calculate the total number of pages. We can get this count using a separate query with the 'head' option to avoid fetching all the data again.
+      
       const { count } = await supabase
         .from('menu_items')
         .select('*', { count: 'exact', head: true })

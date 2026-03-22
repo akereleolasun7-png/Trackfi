@@ -18,7 +18,7 @@ export default function MenuList() {
   const queryClient = useQueryClient();
   const [editData, setEditData] = useState<MenuItem | null>(null);
   const [page, setPage] = useState(0); 
-  // Fetch menus for current page
+  
   const { data: menus = [], isLoading, isError, error } = useQuery({
     queryKey: ['menus', page],
   queryFn: () => adminMenuApi.getMenus(page, ITEMS_PER_PAGE),
@@ -157,7 +157,7 @@ export default function MenuList() {
         <Button
           size="sm"
           onClick={nextPage}
-          disabled={menus.length < ITEMS_PER_PAGE} // disable next if less than 10 items
+          disabled={menus.length < ITEMS_PER_PAGE}
         >
           Next
         </Button>

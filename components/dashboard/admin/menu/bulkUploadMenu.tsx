@@ -27,7 +27,7 @@ export default function BulkUploadMenu() {
       toast.success(`Successfully added ${variables.length} items!`);
       queryClient.invalidateQueries({ queryKey: ['menus'] });
       
-      // Reset form
+      
       setShowUpload(false);
       setFile(null);
       setParsedData([]);
@@ -111,7 +111,6 @@ export default function BulkUploadMenu() {
       return;
     }
 
-    // Show loading toast
     toast.loading(`Uploading ${parsedData.length} items...`, {
       id: 'bulk-upload',
     });
@@ -129,7 +128,6 @@ export default function BulkUploadMenu() {
     // Trigger mutation
     bulkUploadMutation.mutate(items, {
       onSettled: () => {
-        // Dismiss loading toast on success or error
         toast.dismiss('bulk-upload');
       },
     });

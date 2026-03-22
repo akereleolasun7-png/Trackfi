@@ -1,4 +1,3 @@
-// app/api/admin/staff/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 
@@ -21,7 +20,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Transform to match frontend expectations (_id instead of id)
+    
     const transformedStaff = staff.map(s => ({
       _id: s.id,
       email: s.email,

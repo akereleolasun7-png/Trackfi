@@ -1,4 +1,3 @@
-// lib/api/dashboard.ts
 import { DashboardStats } from "@/types";
 
 export const dashboardApi = {

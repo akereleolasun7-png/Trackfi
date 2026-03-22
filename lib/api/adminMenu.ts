@@ -13,7 +13,7 @@ export const adminMenuApi = {
     return res.json();
   },
   editMenu: async (formData: FormData) => {
-    // Get ID from formData
+
     const id = formData.get('id') as string;
 
     if (!id) {

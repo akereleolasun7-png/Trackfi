@@ -22,9 +22,9 @@ import { toast } from "sonner";
 interface Props {
   menuitem: MenuItem;
   open: boolean;
-  onSubmit: (formData: FormData) => void; // ✅ Changed from onSuccess
+  onSubmit: (formData: FormData) => void;
   onCancel: () => void;
-  isLoading: boolean; // ✅ Loading state from parent
+  isLoading: boolean;
 }
 
 export default function EditMenuCard({
@@ -52,7 +52,6 @@ export default function EditMenuCard({
 
     const isImage = file.type.startsWith('image/');
     const isVideo = file.type.startsWith('video/');
-    // minimum size for the  media types
     const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
     const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
 
@@ -68,7 +67,7 @@ export default function EditMenuCard({
           ? 'Video must be under 50MB'
           : 'Image must be under 2MB'
       );
-      e.target.value = ''; // clear the input
+      e.target.value = '';
       return;
     }
 
@@ -94,7 +93,7 @@ export default function EditMenuCard({
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("id", menuitem._id); // ✅ Add ID
+    formData.append("id", menuitem._id);
     formData.append("name", name);
     formData.append("price", String(price));
     formData.append("category", category);
@@ -105,7 +104,7 @@ export default function EditMenuCard({
       formData.append("mediaType", mediaType);
     }
 
-    onSubmit(formData); // ✅ Call parent handler
+    onSubmit(formData);
   }
 
   return (

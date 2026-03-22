@@ -1,4 +1,4 @@
-// lib/api/settings.ts
+
 import {
   RestaurantSettings,
 } from '@/types';
@@ -24,7 +24,7 @@ export const settingsApi = {
     const result = await res.json();
 
     if (!res.ok) {
-      // Use 'error' field, not 'message'
+      
       const errorMessage = result.error || `Failed to update order code (${res.status})`;
       throw new Error(errorMessage);
     }
@@ -42,7 +42,7 @@ export const settingsApi = {
     const result = await res.json();
 
     if (!res.ok) {
-      // Use 'error' field, not 'message'
+    
       const errorMessage = result.error || `Failed to update table count (${res.status})`;
       throw new Error(errorMessage);
     }

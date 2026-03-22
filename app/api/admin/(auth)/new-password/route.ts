@@ -1,4 +1,3 @@
-// app/api/admin/(auth)/new-password/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
@@ -22,8 +21,6 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient();
 
-    // When user clicks the reset link, Supabase automatically creates a session
-    // So we just need to check if they have a valid session
     const { data: { user }, error: sessionError } = await supabase.auth.getUser();
 
     if (sessionError || !user) {
@@ -34,7 +31,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update the user's password
     const { error: updateError } = await supabase.auth.updateUser({
       password: password,
     });

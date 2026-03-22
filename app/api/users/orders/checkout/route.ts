@@ -60,7 +60,6 @@ export async function POST(req: Request) {
     ? item.menu_items[0]
     : item.menu_items;
 
-  // Use menu image if exists, otherwise a default placeholder
   const imageUrl = menu?.image_url?.trim() || `${process.env.NEXT_PUBLIC_APP_URL}/images/default_placeholder.png`;
 
 return {

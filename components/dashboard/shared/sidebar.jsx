@@ -67,7 +67,6 @@ export function AppSidebar({ userRole }) {
   const { setOpen } = useSidebar();
   const isMobile = useIsMobile();
 
-  // use shadcn's open state for rendering, not just Zustand
   const showText = isMobile ? true : isOpen;
   // Sync shadcn with Zustand
   useEffect(() => {

@@ -12,13 +12,12 @@ const StaffManagement = () => {
   const [filter, setFilter] = useState<StaffFilter>('all');
   const queryClient = useQueryClient();
 
-  // Fetch staff list
+
   const { data: staff, isLoading, isError } = useQuery({
     queryKey: ['staff'],
     queryFn: staffApi.getAll
   });
 
-  // Show error toast
   useEffect(() => {
     if (isError) {
       toast.error('Failed to load staff');
@@ -61,7 +60,6 @@ const StaffManagement = () => {
     }
   });
 
-  // Filter staff
   const filteredStaff = staff?.filter((member: StaffType) => {
     const matchesSearch = 
       member.email?.toLowerCase().includes(searchTerm.toLowerCase());

@@ -2,7 +2,7 @@ import { MenuItem } from "@/types";
 
 interface MenuResponse {
   data: MenuItem[];
-  total: number; // total count of available menu items for pagination
+  total: number; 
 }
 
 export const menuApi = {

@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if (userError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     
       const body = await request.json();
-    // Validate items array
+
     if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
       return NextResponse.json(
         { success: false, error: "Invalid items array" },
@@ -18,7 +18,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get restaurant_id from restaurants table
     const { data: restaurant, error: restaurantError } = await supabase
       .from("restaurant")
       .select("id")
@@ -32,13 +31,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Add restaurant_id to each item
     const itemsWithRestaurant: MenuItemWithRestaurant[] = body.items.map((item: CreateMenuItem) => ({
       ...item,
-      restaurant_id: restaurant.id // Extract just the id, not the whole object
+      restaurant_id: restaurant.id 
     }));
 
-    // Insert all items
+    
     const { data, error: insertError } = await supabase
       .from("menu_items")
       .insert(itemsWithRestaurant)

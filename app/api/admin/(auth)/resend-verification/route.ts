@@ -1,4 +1,4 @@
-// app/api/admin/resend-verification/route.ts
+
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient();
 
-    // Resend verification email
+    
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: email,

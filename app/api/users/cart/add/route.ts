@@ -22,14 +22,14 @@ export async function POST(req: Request) {
     if (sessionError || !session || !session.is_active) {
       return NextResponse.json({ error: 'Invalid or expired session' }, { status: 401 });
     }
-    // update activity
+    
    await refreshSessionActivity(supabase, session.id);
     const { menuId } = await req.json();
     if (!menuId) {
       return NextResponse.json({ error: 'menuId is required' }, { status: 400 });
     }
 
-    // ✅ Check if item already exists in cart
+    
     const { data: existingItem } = await supabase
       .from('cart_items')
       .select('id, quantity')
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       .single();
 
     if (existingItem) {
-      // ✅ Item exists — just increment quantity
+      
       const { error: updateError } = await supabase
         .from('cart_items')
         .update({ quantity: existingItem.quantity + 1 })
@@ -51,7 +51,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'Cart item quantity updated' }, { status: 200 });
     }
 
-    // ✅ Item doesn't exist — insert new row
     const { error: insertError } = await supabase
       .from('cart_items')
       .insert({

@@ -58,7 +58,7 @@
         if (!res.ok || result.error) {
            if (result.code === "EMAIL_NOT_CONFIRMED") {
               toast.error(result.error, { id: toastId });
-              // Redirect to verification page after 2 seconds
+              
               setTimeout(() => {
                 router.push(`/admin/verify-email?email=${encodeURIComponent(email)}`);
               }, 2000);

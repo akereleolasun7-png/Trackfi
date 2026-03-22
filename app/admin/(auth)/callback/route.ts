@@ -7,7 +7,6 @@ export async function GET(request: NextRequest) {
   const error = requestUrl.searchParams.get("error");
   const errorDescription = requestUrl.searchParams.get("error_description");
 
-  // Handle OAuth errors
   if (error) {
     console.error("OAuth callback error:", error, errorDescription);
     return NextResponse.redirect(
@@ -26,11 +25,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // SUCCESS! Redirect to your desired page
-    return NextResponse.redirect(new URL("/admin/dashboard", request.url)); // Change to your desired route
+    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
-  // No code and no error - something went wrong
   return NextResponse.redirect(
     new URL("/admin/auth-error?message=No authorization code received", request.url)
   );

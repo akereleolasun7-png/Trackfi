@@ -25,7 +25,6 @@ export default function MenuPage({ params }: PageProps) {
   const ITEMS_PER_PAGE = 10;
   const queryClient = useQueryClient();
 
-  // Start session
   const {
     isLoading: isSessionLoading,
     isSuccess: isSessionSuccess,
@@ -38,7 +37,6 @@ export default function MenuPage({ params }: PageProps) {
     retry: false,
   });
 
-  // Add to cart mutation - MOVED TO TOP LEVEL
   const { mutate: addToCart, isPending: isAddingToCart } = useMutation({
     mutationFn: (menuId: string) => cartApi.addCart(menuId),
     onMutate: () => {
@@ -53,7 +51,6 @@ export default function MenuPage({ params }: PageProps) {
     },
   });
 
-  // Handle cart click
   const handleCart = (menuId: string) => {
     if (isAddingToCart) return;
     addToCart(menuId);
@@ -69,7 +66,6 @@ export default function MenuPage({ params }: PageProps) {
   }, [isSessionSuccess, sessionCreated, tableNumber]);
 
   useNetworkError(isSessionError, sessionError, 'Failed to create session');
-  // Menu query
   const {
     data: menusResponse,
     isLoading: isMenuLoading,
@@ -87,7 +83,7 @@ export default function MenuPage({ params }: PageProps) {
 
   useNetworkError(!!menuError, menuError, 'Failed to load menus');
 
-  // Pull out menus array and total from response
+  
   const menus = menusResponse?.data ?? [];
   const total = menusResponse?.total ?? 0;
 
@@ -98,11 +94,11 @@ export default function MenuPage({ params }: PageProps) {
   const filteredMenus = menus.filter((menu) => {
     if (!menu.is_available) return false;
 
-    // Filter logic
+    
     if (filter === 'veg' && !menu.is_veg) return false;
     if (filter === 'vegan' && !menu.is_vegan) return false;
 
-    // Search filter
+    
     if (search.trim() !== '') {
       const query = search.toLowerCase();
       return (

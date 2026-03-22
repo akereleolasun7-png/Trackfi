@@ -11,7 +11,6 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
     const { cartItemId } = await params;
     const supabase = await createClient();
 
-    // 1️⃣ Verify session
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get('session_token')?.value;
     if (!sessionToken) {
@@ -28,9 +27,9 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
     if (sessionError || !session || !session.is_active) {
       return NextResponse.json({ error: 'Invalid or expired session' }, { status: 401 });
     }
-    // update activity
+
    await refreshSessionActivity(supabase, session.id);
-    // 2️⃣ Delete cart item — must belong to this session for security
+   
     const { error } = await supabase
       .from('cart_items')
       .delete()

@@ -1,4 +1,3 @@
-// components/dashboard/admin/ComingSoon.tsx
 import { Construction } from 'lucide-react';
 
 interface Props {

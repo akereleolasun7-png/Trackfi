@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
   
   const supabase = await createClient()
 
-  // Handle new PKCE flow
   if (code) {
     
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
@@ -30,7 +29,6 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Handle old token_hash flow
   if (token_hash && type) {
     
     const { data, error } = await supabase.auth.verifyOtp({

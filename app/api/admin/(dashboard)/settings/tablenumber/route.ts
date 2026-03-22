@@ -1,4 +1,4 @@
-// app/api/admin/settings/tablenumber/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import {updateRestaurantSettingsSchema} from '@/lib/validations/settings'
@@ -14,7 +14,7 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { table_count } = updateRestaurantSettingsSchema.parse(body);
     
-    // Validate table count
+    
     if (!table_count || table_count < 1 || table_count > 100) {
       return NextResponse.json(
         { success: false, error: 'Table count must be between 1 and 100' },
@@ -22,7 +22,6 @@ export async function PUT(req: NextRequest) {
       );
     }
     
-    // Get current restaurant
     const { data: currentRestaurant } = await supabase
       .from('restaurant')
       .select('id')
@@ -35,7 +34,6 @@ export async function PUT(req: NextRequest) {
       );
     }
     
-    // Update restaurant table count
     const { data: restaurant, error } = await supabase
       .from('restaurant')
       .update({
@@ -54,13 +52,11 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Delete all existing tables for this restaurant
     await supabase
       .from('tables')
       .delete()
       .eq('restaurant_id', currentRestaurant.id);
 
-    // Create new table records
     const tablesToInsert = [];
     for (let i = 1; i <= table_count; i++) {
       tablesToInsert.push({
@@ -70,7 +66,7 @@ export async function PUT(req: NextRequest) {
       });
     }
 
-    // Insert all tables at once
+
     const { data: tables, error: tablesError } = await supabase
       .from('tables')
       .insert(tablesToInsert)

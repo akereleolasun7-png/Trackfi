@@ -1,4 +1,3 @@
-// app/api/admin/staff/activate/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { staffIdSchema } from "@/lib/validations/staff_validation";
 import { supabaseAdmin } from "@/utils/supabase/admin";
@@ -9,7 +8,7 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { staffId } = staffIdSchema.parse(body);
 
-    // Check if staff exists
+    
     const { data: staff, error: fetchError } = await supabaseAdmin
       .from("staff")
       .select("is_active")
@@ -30,7 +29,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Activate staff
+    
     const { error: updateError } = await supabaseAdmin
       .from("staff")
       .update({ is_active: true })

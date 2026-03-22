@@ -13,15 +13,15 @@ export default async function AdminLayout({
 }) {
   const supabase = await createClient();
 
-  // Check if user is authenticated
+  
   const { data: { user }, error } = await supabase.auth.getUser();
 
-  // If not logged in, redirect to login
+  
   if (!user || error) {
     redirect("/admin/login");
   }
 
-  // Optional: Check if user exists in staff table and is active
+  
   const { data: staff , error:staffError } = await supabase
     .from('staff')
     .select('id,email, role, is_active')
@@ -34,7 +34,8 @@ export default async function AdminLayout({
   if (!staff.is_active) {
     return <InactiveAccount />;
   }
-  const NAVBAR_HEIGHT = 84; // Reduced for better spacing
+  const NAVBAR_HEIGHT = 84; 
+  
   const userRole = staff?.role || 'user'; 
     return (
       <SidebarProvider defaultOpen={false}>

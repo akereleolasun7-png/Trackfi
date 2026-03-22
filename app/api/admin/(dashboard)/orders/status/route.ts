@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 export async function PUT(req: NextRequest) {
   const supabase = await createClient();
 
-  // Auth check
+  
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -25,7 +25,7 @@ export async function PUT(req: NextRequest) {
   .update({ status, updated_at: new Date().toISOString() })
   .eq('id', orderId)
   .select()
-  .maybeSingle(); // ← won't crash on 0 rows
+  .maybeSingle(); 
   
 if (!data && !error) {
   return NextResponse.json({ error: 'Order not found' }, { status: 404 });

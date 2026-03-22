@@ -1,4 +1,3 @@
-// app/menu/[table]/layout.tsx
 import { Providers } from "@/provider";
 interface LayoutProps {
   children: React.ReactNode;

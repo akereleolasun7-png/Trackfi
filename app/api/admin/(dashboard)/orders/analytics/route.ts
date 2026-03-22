@@ -17,7 +17,7 @@ export async function GET() {
             .gte('created_at', today.toISOString());
 
         if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-        // Orders grouped by hour for today
+        
         const hourlyMap: Record<number, number> = {};
         orders?.forEach(o => {
             const hour = new Date(o.created_at).getHours();

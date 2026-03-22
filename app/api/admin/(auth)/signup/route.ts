@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
       );
     }
    
-    // Proceed with signup
     const { data, error } = await supabase.auth.signUp({
       email,  
       password,
@@ -53,7 +52,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ ONLY enqueue email if signup succeeded
+    
     if (data.user?.email) {
       try {
         await emailQueue.add("send-welcome-email", {

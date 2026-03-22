@@ -1,4 +1,3 @@
-// app/api/tables/route.ts
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 
@@ -6,7 +5,7 @@ export async function GET() {
   try {
     const supabase = await createClient();
 
-    // Get ALL tables with their active sessions (if any)
+  
     const { data: tables, error } = await supabase
       .from('tables')
       .select(`
@@ -21,15 +20,13 @@ export async function GET() {
           last_activity
         )
       `)
-      .order('table_number', { ascending: true }); // This orders by table_number
+      .order('table_number', { ascending: true });
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Format the response - include ALL tables, not just occupied ones
     const formattedTables = tables.map(table => {
-      // Find the active session if it exists
       const activeSession = table.table_sessions?.find(
         session => session.is_active === true
       );
