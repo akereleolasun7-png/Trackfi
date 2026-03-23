@@ -1,39 +1,39 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import {updateRestaurantSettingsSchema} from '@/lib/validations/settings'
+import { updateRestaurantSettingsSchema } from '@/lib/validations/settings'
 export async function PUT(req: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
+
     const body = await req.json();
     const { table_count } = updateRestaurantSettingsSchema.parse(body);
-    
-    
+
+
     if (!table_count || table_count < 1 || table_count > 100) {
       return NextResponse.json(
         { success: false, error: 'Table count must be between 1 and 100' },
         { status: 400 }
       );
     }
-    
+
     const { data: currentRestaurant } = await supabase
       .from('restaurant')
       .select('id')
       .maybeSingle();
-    
+
     if (!currentRestaurant) {
       return NextResponse.json(
         { success: false, error: 'Restaurant not found' },
         { status: 404 }
       );
     }
-    
+
     const { data: restaurant, error } = await supabase
       .from('restaurant')
       .update({
@@ -52,20 +52,23 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    await supabase
+    const { data: existingTables } = await supabase
       .from('tables')
-      .delete()
+      .select('table_number')
       .eq('restaurant_id', currentRestaurant.id);
+    const existingNumbers = existingTables?.map(t => Number(t.table_number)) ?? [];
+
 
     const tablesToInsert = [];
     for (let i = 1; i <= table_count; i++) {
-      tablesToInsert.push({
-        table_number: i,
-        restaurant_id: currentRestaurant.id,
-        is_occupied: false
-      });
+      if (!existingNumbers.includes(i)) {
+        tablesToInsert.push({
+          table_number: i,
+          restaurant_id: currentRestaurant.id,
+          is_occupied: false,
+        });
+      }
     }
-
 
     const { data: tables, error: tablesError } = await supabase
       .from('tables')
@@ -80,14 +83,14 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       data: {
         restaurant,
         tables
       }
     }, { status: 200 });
-    
+
   } catch (error) {
     console.error('Error updating table count:', error);
     return NextResponse.json(
