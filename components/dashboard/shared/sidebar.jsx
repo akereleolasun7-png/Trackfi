@@ -1,28 +1,23 @@
 "use client";
 import { useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  Home,
-  Utensils,
-  ShoppingCart,
-  Users,
+  LayoutDashboard,
+  Star,
+  Globe,
+  ArrowLeftRight,
+  BellRing,
   Settings,
-  BarChart3,
-  Menu as MenuIcon,
-  Clock,
-  Bell,
+  HelpCircle,
+  LogOut,
 } from "lucide-react";
 import {
   Tooltip,
@@ -32,123 +27,143 @@ import {
 } from "@/components/ui/tooltip";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import { useIsMobile } from "@/hooks/use-mobile";
-// -------------------- MENUS --------------------
-
-export const adminItems = [
-  { title: "Dashboard", url: "/admin/dashboard", icon: Home },
-  { title: "Orders", url: "/admin/orders", icon: ShoppingCart },
-  { title: "Menu Management", url: "/admin/menu", icon: Utensils },
-  { title: "Staff Management", url: "/admin/staff", icon: Users },
-  { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
-  { title: "Settings", url: "/admin/settings", icon: Settings },
-];
-
-export const staffItems = [
-  { title: "Dashboard", url: "/admin/dashboard", icon: Home },
-  { title: "Active Orders", url: "/staff/orders", icon: ShoppingCart },
-  { title: "Menu", url: "/staff/menu", icon: MenuIcon },
-  { title: "My Shifts", url: "/staff/shifts", icon: Clock },
-  { title: "Notifications", url: "/staff/notifications", icon: Bell },
-  { title: "Settings", url: "/staff/settings", icon: Settings },
-];
-
-export const userItems = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Menu", url: "/menu", icon: Utensils },
-  { title: "My Orders", url: "/orders", icon: ShoppingCart },
-  { title: "Reservations", url: "/reservations", icon: Clock },
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import Image from "next/image";
+import MediaDisplay from "@/components/common/mediaDisplay";
+const userItems = [
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+   { title: "Markets",      url: "/markets",      icon: Globe },
+  { title: "Watchlist", url: "/watchlist", icon: Star },
+  { title: "Transactions", url: "/transactions", icon: ArrowLeftRight },
+  { title: "Alerts", url: "/alerts", icon: BellRing },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
-// -------------------- SIDEBAR --------------------
-
-export function AppSidebar({ userRole }) {
-  const { isOpen } = useSidebarStore()
+export function AppSidebar({user}) {
+  const { isOpen } = useSidebarStore();
   const { setOpen } = useSidebar();
   const isMobile = useIsMobile();
-
   const showText = isMobile ? true : isOpen;
-  // Sync shadcn with Zustand
-  useEffect(() => {
-    setOpen(isOpen)
-  }, [isOpen])
 
-  const menuItems =
-    userRole === "admin"
-      ? adminItems
-      : userRole === "staff"
-        ? staffItems
-        : userItems;
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
+
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+      if (!res.ok) {
+        toast.error("Couldn't logout");
+      } else {
+        toast.success("Logout Successful!");
+        window.location.href = "/login";
+      }
+    } catch {
+      toast.error("Logout failed");
+    }
+  };
 
   return (
     <Sidebar
       collapsible="icon"
-      className="h-screen shadow-xl transition-all duration-200
-  bg-[#16A34A]/90 dark:bg-[#16A33D]/95 border-r border-white/10"
+      className="h-screen bg-[#131313] border-r border-white/10 flex flex-col"
     >
-      {/* ---------- HEADER ---------- */}
-      <div className={`flex  items-center justify-center ${!isOpen ? 'pt-10' : 'p-0'}`}>
+      {/* LOGO */}
+      <div
+        className={`flex items-center gap-3 px-4 py-5 border-b h-20 border-white/10 ${!showText ? "justify-center px-0" : ""}`}
+      >
+        <div className="flex items-center justify-center shrink-0">
+          <Image
+            src="/logos/trackfi.svg"
+            alt="Trackfi Logo"
+            width={56}
+            height={56}
+          />
+        </div>
         {showText && (
-          <Link href="/">
-            <Image
-              src="/logos/savory_icon.png"
-              alt="Savory & co logo"
-              width={120}
-              height={120}
-              priority
-              className="object-contain"
-            />
-          </Link>
+          <div>
+            <h1 className="text-white font-bold text-base leading-none mb-2">
+              Trackfi
+            </h1>
+            <p className="text-[10px] text-gray-500 uppercase tracking-widest">
+              Luminescent Ledger
+            </p>
+          </div>
         )}
       </div>
-      {/* ---------- NAVIGATION ---------- */}
-      <SidebarContent className="flex-1">
-        <SidebarGroup>
-          {showText && (
-            <SidebarGroupLabel className="text-xs font-semibold text-white/70 uppercase tracking-wider px-3">
-              Navigation
-            </SidebarGroupLabel>
-          )}
 
-          <SidebarGroupContent className="mt-4">
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <SidebarMenuButton asChild>
-                          <Link
-                            href={item.url}
-                            className={`group flex items-center gap-3 p-3 rounded-lg
-                            text-white transition-colors
-                            hover:bg-white/10
-                            ${!showText ? "justify-center" : ""}`}
-                          >
-                            <item.icon size={20} className="text-white" />
-
-                            {showText && (
-                              <span className="font-medium">
-                                {item.title}
-                              </span>
-                            )}
-                          </Link>
-                        </SidebarMenuButton>
-                      </TooltipTrigger>
-
-                      {!isOpen && (
-                        <TooltipContent side="right" className="text-sm">
-                          {item.title}
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-                  </TooltipProvider>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+      {/* NAV ITEMS */}
+      <SidebarContent className="flex-1 py-4">
+        <SidebarMenu className="space-y-1 px-2">
+          {userItems.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        href={item.url}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors ${!showText ? "justify-center" : ""}`}
+                      >
+                        <item.icon size={18} />
+                        {showText && (
+                          <span className="text-sm font-medium">
+                            {item.title}
+                          </span>
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {!isOpen && (
+                    <TooltipContent side="right">{item.title}</TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </SidebarContent>
+
+      {/* BOTTOM SECTION */}
+      <div className="mt-auto border-t border-white/10 px-2 py-4 space-y-1">
+        {/* Support */}
+        <Link
+          href="/support"
+          className={`flex items-center gap-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors ${!showText ? "justify-center py-2" : "px-3 py-3"} mb-4`}
+        >
+          <HelpCircle size={18}/>
+          {showText && <span className="text-sm font-medium">Support</span>}
+        </Link>
+
+
+        {/* User row */}
+        <div
+          className={`flex items-center gap-3 px-3 py-5.5 rounded-lg ${!showText ? "justify-center" : "justify-between bg-form"} `}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 p-2">
+                  <MediaDisplay image_url={user.image} name={user.name} />
+            </div>
+            {showText && (
+              <div>
+                <p className="text-sm text-white font-medium leading-none">
+                  {user.name.toUpperCase()}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">{user.packageType} Package</p>
+              </div>
+            )}
+          </div>
+          {showText && (
+            <button
+              onClick={handleSignOut}
+              className="text-gray-500 hover:text-red-400 transition-colors cursor-pointer"
+            >
+              <LogOut size={16} />
+            </button>
+          )}
+        </div>
+      </div>
     </Sidebar>
   );
 }

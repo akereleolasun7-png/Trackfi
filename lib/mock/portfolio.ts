@@ -1,0 +1,26 @@
+// lib/mock/portfolio.ts  — this one already matched, no changes needed
+export const mockStats = {
+isEmpty: false,
+  totalValue: 24853.42,
+  pnlPercent: 12.4,
+  netPnL: 2741.18,
+  bestPerformer: { symbol: "SOL", percent: 34.2 },
+  activeAlerts: 3,
+  chartData: [
+    { date: "Mar 5",  value: 18200 },
+    { date: "Mar 6",  value: 19400 },
+    { date: "Mar 7",  value: 18900 },
+    { date: "Mar 8",  value: 20100 },
+    { date: "Mar 9",  value: 21500 },
+    { date: "Mar 10", value: 20800 },
+    { date: "Mar 11", value: 22300 },
+    { date: "Mar 12", value: 21900 },
+    { date: "Mar 13", value: 23100 },
+    { date: "Mar 14", value: 22700 },
+    { date: "Mar 15", value: 23800 },
+    { date: "Mar 16", value: 24100 },
+    { date: "Mar 17", value: 23600 },
+    { date: "Mar 18", value: 24500 },
+    { date: "Mar 19", value: 24853 },
+  ],
+}

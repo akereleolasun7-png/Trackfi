@@ -1,16 +1,19 @@
 import { NextResponse } from 'next/server'
-import { updateSession } from '@/utils/supabase/middleware'
+import { updateSession , supabase } from '@/utils/supabase/middleware'
+
 export async function middleware(request) {
     let response = await updateSession(request);
+
     // using the cookies in middlewear
-  const token = request.cookies.get('access_token') 
+    const { data: { user } } = await supabase.auth.getUser()
   
   const pathname = request.nextUrl.pathname
-  if (!token && (
+  if (!user && (
     pathname.startsWith('/staff') || 
-    pathname.startsWith('/admin')
+    pathname.startsWith('/dashboard')
+
   )) {
-    return NextResponse.redirect(new URL('/admin/login', request.url))
+    return NextResponse.redirect(new URL('/login', request.url))
   }
   return response;
   
@@ -18,7 +21,7 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    '/admin/:path*',
+    '/dashboard/:path*',
     '/staff/:path*',
   ]
 }

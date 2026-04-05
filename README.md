@@ -1,23 +1,24 @@
-# Restaurant Ordering App
+# Trackfi — Crypto & Personal Finance Tracker
 
-A QR-based restaurant ordering system built with Next.js and Supabase.
+A full-stack crypto and personal finance tracker built with Next.js and Supabase.
 
 ## Features
 
-- QR code table access
-- Session-based customer flow
-- Admin and staff roles
-- Menu browsing with filters
-- Background email jobs
-- Pagination and responsive UI
+- Auth with personal portfolio per user
+- Live coin prices with Redis caching
+- Price alerts via BullMQ background jobs
+- Watchlist + transaction history + P&L
+- Dockerized for easy local setup
+- Testing with Jest + React Testing Library
 
 ## Tech Stack
 
-- Next.js
-- Supabase
-- React Query
-- Radix UI
-- Sonner
+- Next.js 15 + TypeScript
+- Supabase (Auth + Database)
+- Redis + BullMQ (caching + background jobs)
+- Chart.js (data visualization)
+- Tailwind CSS
+- Docker
 
 ## Running Locally
 
@@ -25,20 +26,22 @@ A QR-based restaurant ordering system built with Next.js and Supabase.
 
 git clone <repo>
 
-2. Install dependencies
+2. Add environment variables
 
-npm install
+Create `.env.local` and fill from .env.example
 
-3. Add environment variables
 
-Create `.env.local`
-check the rest variables from .env.example
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-
-4. Run the development server
-
-npm run dev
+3. Start with Docker
+```bash
+docker-compose up --build
+```
 
 App runs at:
 http://localhost:3000
+
+4. Continuing running the app
+```bash
+docker-compose up
+```
+
+> Redis is included in Docker — no separate setup needed.

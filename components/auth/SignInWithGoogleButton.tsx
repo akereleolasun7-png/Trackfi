@@ -19,7 +19,7 @@ const SignInWithGoogleButton = () => {
     <Button
       type="button"
       variant="outline"
-      className="w-83 p-4 flex items-center justify-center bg-black/30"
+      className="w-full h-12 p-4 flex items-center justify-center  bg-[#1A1919] border-white/10 text-white hover:bg-[#3f3e3e] disabled:cursor-not-allowed disabled:opacity-50"
       onClick={handleGoogleSignIn}
       disabled={isDisabled}
     >

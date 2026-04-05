@@ -7,8 +7,8 @@ import { ArrowLeft, QrCode, ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-import { landingTablesApi } from '@/lib/api';
-import { useNetworkError } from '@/hooks/useNetworkError';
+// import { landingTablesApi } from '@/lib/api';
+// import { useNetworkError } from '@/hooks/useNetworkError';
 
 type TableStatus = 'available' | 'active';
 
@@ -55,45 +55,48 @@ export default function TablesPage() {
 
   const [selected, setSelected] = useState<number | null>(null);
 
-  const { data, isLoading, isError, error } = useQuery<TablesResponse>({
-    queryKey: ['tables'],
-    queryFn: () => landingTablesApi.getTables(),
-    staleTime: 1000 * 60 * 5,
-    retry: 1,
-  });
+  // const { data, isLoading, isError, error } = useQuery<TablesResponse>({
+  //   queryKey: ['tables'],
+  //   queryFn: () => landingTablesApi.getTables(),
+  //   staleTime: 1000 * 60 * 5,
+  //   retry: 1,
+  // });
 
-  useNetworkError(!!isError, error, 'Failed to load tables');
+  // useNetworkError(!!isError, error, 'Failed to load tables');
 
-  useEffect(() => {
-    if (!error) return;
+  // useEffect(() => {
+  //   if (!error) return;
 
-    if (error instanceof Error) {
-      toast.error('Failed to load tables', {
-        description: error.message,
-      });
-    }
-  }, [error]);
+  //   if (error instanceof Error) {
+  //     toast.error('Failed to load tables', {
+  //       description: error.message,
+  //     });
+  //   }
+  // }, [error]);
 
-  const tables = data?.tables || [];
-
+  // const tables = data?.tables || [];
+    const tables: Table[] = [
+    { id: 1, number: '1', status: 'available' },
+    { id: 2, number: '2', status: 'active' },
+    ]
   const selectedTable = tables.find(t => t.id === selected);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <Image
-            src="/logos/Spinner.svg"
-            alt="Loading animation"
-            width={100}
-            height={100}
-            priority
-          />
-          <p className="text-gray-600">Loading tables...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-gray-50">
+  //       <div className="text-center">
+  //         <Image
+  //           src="/logos/Spinner.svg"
+  //           alt="Loading animation"
+  //           width={100}
+  //           height={100}
+  //           priority
+  //         />
+  //         <p className="text-gray-600">Loading tables...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -1,42 +1,42 @@
-export type SectionKey = "staff" | "orders" | "menu" | "revenue";
-
-export interface DashboardStats {
-  success: boolean;
-  staff: {
-    total: number;
-    active: number;
-    onShift: number;
-  };
-  orders: {
-    today: number;
-    pending: number;
-    completed: number;
-  };
-  menu: {
-    total: number;
-    outOfStock: number;
-    popular: number;
-  };
-  revenue: {
-    today: number;
-    thisWeek: number;
-    trend: string;
-  };
+export interface PortfolioStats {
+  isEmpty: boolean;
+  stats?: {
+    totalValue: number;
+    pnlPercent: number;
+    netPnL: number;
+    bestPerformer: { symbol: string; percent: number } | null;
+    activeAlerts: number;
+    chartData: { date: string; value: number }[];
+  }
+}
+export interface AssetAllocationItem {
+  label: string;
+  percent: number;
+  color: string;
 }
 
-export interface CardConfig<T extends string> {
-  key: T;
+export interface RecentTransactionItem {
+  id: string;
+  type: "buy" | "sell"| "swap" | "deposit" | "withdrawal";
+  value: number;
+  coin: string  ;
+  date: string;
+}
+
+export interface MarketCoinItem {
+  id: string;
+  symbol: string;
+  name: string;
+  current_price: number;
+  price_change_percentage_24h: number;
+  holdings: number;      
+}
+
+export interface SmartAlertItem {
+  id: string;
+  type: "volatility" | "whale" | "target" | "limit";
   title: string;
   description: string;
-  icon: React.ReactNode;
-  count: string;
-  alert?: string;
-}
-
-export interface DashboardShellProps<T extends string> {
-  title: string;
-  subtitle?: string;
-  cards: CardConfig<T>[];
-  sections: Record<T, React.ReactNode>;
-  loading?: boolean;
+  triggered: boolean;
+  action?: string;
 }
