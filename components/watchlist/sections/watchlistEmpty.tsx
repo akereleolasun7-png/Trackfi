@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import Link from 'next/link'
-import { Star, Compass, Bell, TrendingUp, Globe } from 'lucide-react'
+import { Star, Bell, TrendingUp, Globe } from 'lucide-react'
 
 export function WatchlistEmpty() {
   return (
@@ -36,19 +36,12 @@ export function WatchlistEmpty() {
         </p>
 
         <div className="flex items-center gap-4 flex-wrap justify-center">
+          <Link href={'/markets'}>
           <button className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-black font-bold rounded-full px-6 py-3 transition-colors">
             <Star className="w-4 h-4 fill-black" />
             Add Your First Coin
-          </button>
-          <Link
-            href="/markets"
-            className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-medium"
-          >
-            <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center">
-              <Compass className="w-4 h-4" />
-            </div>
-            Explore Markets
-          </Link>
+          </button></Link>
+          
         </div>
       </div>
 

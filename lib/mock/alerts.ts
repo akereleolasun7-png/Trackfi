@@ -1,0 +1,67 @@
+import { PriceAlert, AlertStats } from '@/types/alerts'
+
+export const mockAlerts: PriceAlert[] = [
+  {
+    id: 'alert_001',
+    coin: 'Bitcoin',
+    symbol: 'BTC',
+    condition: 'above',
+    targetPrice: 70000,
+    lastPrice: 71204.12,
+    status: 'active',
+    createdAt: '2024-05-12T00:00:00Z',
+    triggeredRecently: true,
+    deliveryChannels: { inApp: true, email: false },
+    emailAddress: 'market@user.com',
+  },
+  {
+    id: 'alert_002',
+    coin: 'Ethereum',
+    symbol: 'ETH',
+    condition: 'below',
+    targetPrice: 2000,
+    status: 'active',
+    createdAt: '2024-05-10T00:00:00Z',
+    deliveryChannels: { inApp: true, email: false },
+    emailAddress: 'market@user.com',
+  },
+  {
+    id: 'alert_003',
+    coin: 'Solana',
+    symbol: 'SOL',
+    condition: 'above',
+    targetPrice: 150,
+    status: 'paused',
+    createdAt: '2024-04-28T00:00:00Z',
+    deliveryChannels: { inApp: false, email: false },
+    emailAddress: 'market@user.com',
+  },
+  {
+    id: 'alert_004',
+    coin: 'BNB',
+    symbol: 'BNB',
+    condition: 'above',
+    targetPrice: 400,
+    status: 'active',
+    createdAt: '2024-05-02T00:00:00Z',
+    deliveryChannels: { inApp: true, email: false },
+    emailAddress: 'market@user.com',
+  },
+  {
+    id: 'alert_005',
+    coin: 'Dogecoin',
+    symbol: 'DOGE',
+    condition: 'below',
+    targetPrice: 0.10,
+    status: 'paused',
+    createdAt: '2024-05-05T00:00:00Z',
+    deliveryChannels: { inApp: false, email: false },
+    emailAddress: 'market@user.com',
+  },
+]
+
+export const mockAlertStats: AlertStats = {
+  total: 5,
+  active: 3,
+  paused: 2,
+}

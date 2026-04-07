@@ -1,21 +1,25 @@
 // lib/mock/search.ts
-import { mockMarket } from './market'
-import { mockTransactions } from './transactions'
-import { mockAlerts } from './alert'
+import { mockMarkets } from "./markets";
+import { mockTransactions } from "./transactions";
+import { mockAlerts } from "./alert";
 
 export function mockSearchResults(query: string) {
-  const q = query.toLowerCase().trim()
-  if (!q) return { coins: [], transactions: [], alerts: [] }
+  const q = query.toLowerCase().trim();
+  if (!q) return { coins: [], transactions: [], alerts: [] };
 
   return {
-    coins: mockMarket.filter(c =>
-      c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q)
+    coins: mockMarkets.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q),
     ),
-    transactions: mockTransactions.filter(t =>
-      t.coin.toLowerCase().includes(q) || t.type.toLowerCase().includes(q)
+    transactions: mockTransactions.filter(
+      (t) =>
+        t.coin.toLowerCase().includes(q) || t.type.toLowerCase().includes(q),
     ),
-    alerts: mockAlerts.filter(a =>
-      a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q)
+    alerts: mockAlerts.filter(
+      (a) =>
+        a.title.toLowerCase().includes(q) ||
+        a.description.toLowerCase().includes(q),
     ),
-  }
+  };
 }

@@ -10,7 +10,7 @@ export interface SearchBarResultsItem {
     id: string
     type: 'buy' | 'sell' | 'swap' | 'deposit' | 'withdrawal'
     coin: string
-    value: number
+    total_value: number
     date: string
   }[]
   alerts: {

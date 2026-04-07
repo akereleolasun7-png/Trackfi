@@ -18,8 +18,8 @@ export interface AssetAllocationItem {
 export interface RecentTransactionItem {
   id: string;
   type: "buy" | "sell"| "swap" | "deposit" | "withdrawal";
-  value: number;
-  coin: string  ;
+  total_value: number;
+  coin: string ;
   date: string;
 }
 

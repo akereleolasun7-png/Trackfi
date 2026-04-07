@@ -53,7 +53,7 @@ function RecentTransactions({ transactions }: { transactions: RecentTransactionI
                   </div>
                 </div>
                 <p className={`text-sm font-medium ${config.text}`}>
-                  {config.prefix}${tx.value.toLocaleString()}
+                  {config.prefix}${tx.total_value.toLocaleString()}
                 </p>
               </div>
             )

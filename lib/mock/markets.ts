@@ -1,0 +1,12 @@
+import { WatchlistCoin } from '@/types/index'
+
+export const mockMarkets: WatchlistCoin[] = [
+  { id: 'bitcoin',  name: 'Bitcoin',  symbol: 'BTC', current_price: 64281.40, price_change_percentage_24h: 2.45,  price_change_percentage_7d: 5.2,  market_cap: 1_260_000_000_000, sparkline: [60000,61000,62000,63000,64000,64281], isWatchlisted: false, hasAlert: false, holdings: 0 },
+  { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', current_price: 3422.15,  price_change_percentage_24h: 1.82,  price_change_percentage_7d: 3.1,  market_cap: 412_000_000_000,   sparkline: [3200,3250,3300,3350,3400,3422],   isWatchlisted: false, hasAlert: false, holdings: 0 },
+  { id: 'solana',   name: 'Solana',   symbol: 'SOL', current_price: 148.90,   price_change_percentage_24h: 12.4,  price_change_percentage_7d: 18.5, market_cap: 65_000_000_000,    sparkline: [120,125,130,138,145,148],         isWatchlisted: false, hasAlert: false, holdings: 0 },
+  { id: 'bnb',      name: 'BNB',      symbol: 'BNB', current_price: 589.44,   price_change_percentage_24h: 2.11,  price_change_percentage_7d: 4.3,  market_cap: 85_000_000_000,    sparkline: [560,565,570,575,585,589],         isWatchlisted: false, hasAlert: false, holdings: 0 },
+  { id: 'xrp',      name: 'XRP',      symbol: 'XRP', current_price: 0.52,     price_change_percentage_24h: -1.20, price_change_percentage_7d: -2.1, market_cap: 28_000_000_000,    sparkline: [0.54,0.53,0.53,0.52,0.52,0.52],  isWatchlisted: false, hasAlert: false, holdings: 0 },
+  { id: 'cardano',  name: 'Cardano',  symbol: 'ADA', current_price: 0.45,     price_change_percentage_24h: -0.80, price_change_percentage_7d: 1.2,  market_cap: 15_000_000_000,    sparkline: [0.44,0.44,0.45,0.45,0.45,0.45],  isWatchlisted: false, hasAlert: false, holdings: 0 },
+  { id: 'dogecoin', name: 'Dogecoin', symbol: 'DOGE',current_price: 0.12,     price_change_percentage_24h: 5.30,  price_change_percentage_7d: 8.1,  market_cap: 17_000_000_000,    sparkline: [0.10,0.10,0.11,0.11,0.12,0.12],  isWatchlisted: false, hasAlert: false, holdings: 0 },
+  { id: 'polkadot', name: 'Polkadot', symbol: 'DOT', current_price: 7.24,     price_change_percentage_24h: -0.42, price_change_percentage_7d: -1.8, market_cap: 9_000_000_000,     sparkline: [7.4,7.3,7.3,7.2,7.2,7.24],       isWatchlisted: false, hasAlert: false, holdings: 0 },
+]
