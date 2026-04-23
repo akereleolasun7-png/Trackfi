@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { transactionQueue } from "@/lib/queues/transactionsQueue";
 
-// Protect route — only Supabase can call this
+ 
 const CRON_SECRET = process.env.CRON_SECRET;
 
 export async function POST(req: Request) {

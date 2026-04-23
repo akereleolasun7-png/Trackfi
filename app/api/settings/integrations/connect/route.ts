@@ -53,12 +53,14 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id: user.id,
         provider,
-        wallet_adress: credentials,
+        wallet_address: credentials,
         status: "connected",
         is_primary: false,
       })
       .select("*")
       .single();
+      console.log("Integration saved:", insertError);
+
     if (insertError || !connectIntegration) {
       return NextResponse.json(
         { error: "Failed to save integration" },
@@ -66,7 +68,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    
+    try {    
+        console.log(process.env.ETHERSCAN_API_KEY, 'url')
         await transactionQueue.add("fetch_transactions_wallet", {
           userId: user.id,
           provider,
@@ -74,7 +77,10 @@ export async function POST(request: NextRequest) {
           integrationId: connectIntegration.id,
           lastSyncedAt: null,
         });
-     
+        console.log("Job enqueued successfully");
+    }catch(queueErr){
+        console.error("Queue error:", queueErr);
+    }
 
     return NextResponse.json("Integration connected successfully", {
       status: 201,

@@ -19,6 +19,7 @@ interface IntegrationCardProps {
   onSync?: () => void;
   onDisconnect?: () => void;
   isSyncing?: boolean;
+  isDisconnecting?: boolean;
 }
 
 export function IntegrationCard({
@@ -27,6 +28,7 @@ export function IntegrationCard({
   onSync,
   onDisconnect,
   isSyncing,
+  isDisconnecting,
 }: IntegrationCardProps) {
   const [showAddressInput, setShowAddressInput] = useState(false);
   const [address, setAddress] = useState("");
@@ -82,6 +84,8 @@ export function IntegrationCard({
       setAddress("");
       setShowAddressInput(false);
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Connection failed";
       console.error("Connection failed:", error);
     } finally {
       setIsSubmitting(false);
@@ -194,15 +198,17 @@ export function IntegrationCard({
               <Button
                 onClick={handleSubmitAddress}
                 disabled={!address.trim() || isSubmitting}
-                className="bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-black font-bold py-2 px-4 rounded-lg flex items-center gap-2"
+                className="w-15 h-10 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-black font-bold py-2 px-4 rounded-lg flex items-center gap-2 cursor-pointer"
               >
-                <Send className="w-4 h-4" />
+                <Send
+                  className={`w-4 h-4 ${isSubmitting ? "animate-spin" : ""}`}
+                />
               </Button>
             </div>
           ) : (
             <Button
               onClick={handleConnectClick}
-              className="flex-1 bg-primary hover:bg-primary/90 text-black font-bold py-2 rounded-lg"
+              className="flex-1 bg-primary hover:bg-primary/90 text-black font-bold py-2 rounded-lg cursor-pointer"
             >
               Connect
             </Button>
@@ -221,9 +227,12 @@ export function IntegrationCard({
             </Button>
             <Button
               onClick={onDisconnect}
-              className="px-4 py-2 text-red-400 hover:text-red-300 transition-colors"
+              disabled={isDisconnecting}
+              className="px-4 py-2 text-red-400 hover:text-red-300 disabled:text-red-400/50 transition-colors"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2
+                className={`w-4 h-4 ${isDisconnecting ? "animate-spin" : ""}`}
+              />
             </Button>
           </>
         )}

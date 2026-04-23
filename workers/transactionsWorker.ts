@@ -28,7 +28,6 @@ if (
 )
   throw new Error("Supabase credentials are required");
 
-// ─── Connections ──────────────────────────────────────────────
 const connection = new Redis(process.env.REDIS_URL, {
   maxRetriesPerRequest: null,
   tls: {},
@@ -87,7 +86,8 @@ const worker = new Worker(
 
     const isFirstSync = !lastSyncedAt;
     const limit = isFirstSync ? 50 : 10000;
-    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${walletAddress}&sort=desc&page=1&offset=${limit}&apikey=${process.env.ETHERSCAN_API_KEY}`;
+    const url = `https://api.etherscan.io/v2/api?chaini=1&module=account&action=txlist&address=${walletAddress}&sort=desc&page=1&offset=${limit}&apikey=${process.env.ETHERSCAN_API_KEY}`;
+
     const res = await fetch(url);
     const json = await res.json();
 
