@@ -95,7 +95,7 @@ const worker = new Worker(
       throw new Error(`Etherscan error: ${json.message}`);
     }
 
-    const txs: E[] = json.result ?? [];
+    const txs: EtherscanTx[] = json.result ?? [];
     console.log(`📦 Total transactions on chain: ${txs.length}`);
 
     // 2. Filter new transactions since last sync + skip zero value (contract calls)

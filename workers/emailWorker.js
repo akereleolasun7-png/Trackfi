@@ -2,7 +2,6 @@ import { Worker } from "bullmq";
 import Redis from "ioredis";
 import { Resend } from "resend";
 
-
 if (!process.env.REDIS_URL) {
   throw new Error("REDIS_URL is required");
 }
@@ -11,21 +10,18 @@ if (!process.env.RESEND_API_KEY) {
   throw new Error("RESEND_API_KEY is required");
 }
 
-
 const connection = new Redis(process.env.REDIS_URL, {
   maxRetriesPerRequest: null,
   tls: {},
 });
 
-
 const resend = new Resend(process.env.RESEND_API_KEY);
-
 
 const worker = new Worker(
   "emailQueue",
   async (job) => {
     const { email, name } = job.data;
-    
+
     console.log(`📧 Sending email to ${email}...`);
 
     try {
@@ -49,10 +45,11 @@ const worker = new Worker(
         throw new Error(error.message);
       }
 
-      console.log(`✅ Email sent to ${email} - ID: ${data.id}`);
+      console.log(`✅ Email sent to ${email} - ID: ${data?.id}`);
       return { success: true, id: data.id };
     } catch (err) {
-      console.error(`❌ Failed to send email to ${email}:`, err.message);
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`❌ Failed:`, message);
       throw err;
     }
   },
@@ -61,7 +58,7 @@ const worker = new Worker(
     concurrency: 5,
     removeOnComplete: { count: 100 },
     removeOnFail: { count: 50 },
-  }
+  },
 );
 
 worker.on("completed", (job) => {
@@ -73,7 +70,6 @@ worker.on("failed", (job, err) => {
 });
 
 console.log("🚀 Email worker started with Resend");
-
 
 process.on("SIGTERM", async () => {
   await worker.close();
