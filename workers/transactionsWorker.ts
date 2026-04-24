@@ -260,19 +260,17 @@ const worker = new Worker(
     console.log(`[UPSERT_CONFIG] onConflict: user_id,tx_hash`);
 
     let insertError;
-    let upsertData;
+    
     try {
       const result = await supabase
         .from("transactions")
         .upsert(rows, { onConflict: "user_id,tx_hash" });
       insertError = result.error;
-      upsertData = result.data;
+      
       console.log(
         `[UPSERT_RESPONSE] Error: ${insertError ? insertError.message : "null"}`,
       );
-      console.log(
-        `[UPSERT_RESPONSE] Data length: ${Array.isArray(upsertData) ? upsertData.length : "not array"}`,
-      );
+     
     } catch (upsertErr) {
       console.error(`[UPSERT_EXCEPTION] Upsert threw exception:`, upsertErr);
       throw upsertErr;
