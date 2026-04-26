@@ -6,8 +6,15 @@ export async function middleware(request: NextRequest) {
 
     // using the cookies in middlewear
     const { data: { user } } = await supabase.auth.getUser()
-  
+      
   const pathname = request.nextUrl.pathname
+  
+
+    const authRoutes = ["/login", "/signup"];
+  if (user && authRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
   if (!user && (
     pathname.startsWith('/transactions') || 
     pathname.startsWith('/alerts') || 
@@ -30,6 +37,8 @@ export const config = {
     '/alerts/:path*',
     '/watchlist/:path*',
     '/settings/:path*',
-    '/markets/:path*' 
+    '/markets/:path*' ,
+    '/login',
+    '/signup',
   ]
 }

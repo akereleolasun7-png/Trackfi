@@ -128,11 +128,6 @@ export function CoinRowSection({
         </div>
       </td>
 
-      <td className="py-4 pr-4 md:table-cell">
-        <p className="text-sm font-medium text-white whitespace-nowrap">
-          {formatCurrency(coin.current_price)}
-        </p>
-      </td>
 
       {showHoldings && (
         <td className="py-4 pr-4">
@@ -150,6 +145,14 @@ export function CoinRowSection({
           )}
         </td>
       )}
+      
+      <td className="py-4 pr-4 md:table-cell">
+        <p className="text-sm font-medium text-white whitespace-nowrap">
+          {formatCurrency(coin.current_price)}
+        </p>
+      </td>
+
+      
 
       <td className="py-4 pr-4">
         <Pct value={coin.price_change_percentage_24h} />

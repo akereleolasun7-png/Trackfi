@@ -54,6 +54,11 @@ export function TransactionTable({
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+      {/* Title */}
+      <h2 className="text-xl font-semibold text-white mb-6">
+        Transaction History
+      </h2>
+
       <div
         className="overflow-x-auto w-full"
         style={{ scrollbarColor: "#000000 transparent" }}
@@ -64,11 +69,19 @@ export function TransactionTable({
               <th className="text-left pb-4 font-medium">Date/Time</th>
               <th className="text-left pb-4 font-medium">Coin</th>
               <th className="text-left pb-4 font-medium">Type</th>
-              <th className="text-left pb-4 font-medium">Amount</th>
-              <th className="text-left pb-4 font-medium hidden md:table-cell">
+              <th className="text-left pb-4 font-medium" title="Amount of coin">
+                Amount
+              </th>
+              <th
+                className="text-left pb-4 font-medium hidden md:table-cell"
+                title="Price per unit at time of transaction"
+              >
                 Price/Unit
               </th>
-              <th className="text-left pb-4 font-medium hidden md:table-cell">
+              <th
+                className="text-left pb-4 font-medium hidden md:table-cell"
+                title="Total value of all coins"
+              >
                 Value
               </th>
               <th className="text-left pb-4 font-medium hidden lg:table-cell">
@@ -137,7 +150,7 @@ export function TransactionTable({
                   {/* Amount */}
                   <td className="py-4 pr-4">
                     <p className="text-sm font-medium text-white whitespace-nowrap">
-                      {tx.amount.toFixed(tx.amount < 1 ? 3 : 2)} {tx.symbol}
+                      {tx.amount.toFixed(tx.amount < 1 ? 6 : 2)} {tx.symbol}
                     </p>
                   </td>
 
@@ -166,18 +179,19 @@ export function TransactionTable({
 
                   {/* P&L */}
                   <td className="py-4 pr-4 hidden lg:table-cell">
-                      {tx.status === "completed" &&
-                      (tx.type === "buy" || tx.type === "sell") &&
-                      pnl !== null ? (
-                        <p
-                          className={`text-sm font-semibold whitespace-nowrap ${isPnlPos ? "text-green-400" : "text-red-400"}`}
-                        >
-                          {isPnlPos ? "+" : ""}${pnl.toFixed(2)}
-                        </p>
-                      ) : (
-                        <span className="text-xs text-white/40">—</span>
-                      )}
-                    
+                    {tx.status === "completed" &&
+                    (tx.type === "buy" ||
+                      tx.type === "sell" ||
+                      tx.type === "deposit") &&
+                    pnl !== null ? (
+                      <p
+                        className={`text-sm font-semibold whitespace-nowrap ${isPnlPos ? "text-green-400" : "text-red-400"}`}
+                      >
+                        {isPnlPos ? "+" : ""}${pnl.toFixed(2)}
+                      </p>
+                    ) : (
+                      <span className="text-xs text-white/40">—</span>
+                    )}
                   </td>
 
                   {/* Status */}
