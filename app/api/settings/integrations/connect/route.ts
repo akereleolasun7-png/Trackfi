@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { Integration, IntegrationProvider } from "@/types/settings";
 import { transactionQueue } from "@/lib/queues/transactionsQueue";
+import { redis } from "@/lib/redis";
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -25,9 +26,9 @@ export async function POST(request: NextRequest) {
 
     // Validate provider
     const validProviders: IntegrationProvider[] = [
-      "metamask",
-      "trustwallet",
-      "binance",
+      "solana",
+      "ethereum",
+      "bitcoin",
     ];
 
     if (!validProviders.includes(provider)) {
@@ -67,8 +68,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    try {    
-        console.log(process.env.ETHERSCAN_API_KEY, 'url')
+    try {   
+      await redis.ping(); 
+       console.log("🔄 Attempting to enqueue job...");
         await transactionQueue.add("fetch_transactions_wallet", {
           userId: user.id,
           provider,

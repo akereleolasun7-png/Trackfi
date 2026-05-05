@@ -11,7 +11,7 @@ function PerformanceCharts({ isEmpty, stats }: PortfolioStats) {
           <h2 className="text-lg font-semibold">Portfolio Performance</h2>
           <p className="text-sm text-white/50">Growth over the last 30 days</p>
         </div>
-        <div className="flex gap-2 text-sm">
+        {/* <div className="flex gap-2 text-sm">
           {["1D", "1M", "1Y"].map((t) => (
             <button
               key={t}
@@ -20,7 +20,7 @@ function PerformanceCharts({ isEmpty, stats }: PortfolioStats) {
               {t}
             </button>
           ))}
-        </div>
+        </div> */}
       </div>
       {isEmpty ? (
         <EmptyChart />

@@ -29,7 +29,7 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const page = Number(searchParams.get("page") ?? 1);
-  const limit = 20;
+  const limit = Number(searchParams.get("limit") ?? 20);
   const offset = (page - 1) * limit;
 
   const [{ data: watchlist }, { data: alerts }, { data: holdings }] =
@@ -38,26 +38,23 @@ export async function GET(req: Request) {
         .from("watchlist")
         .select("coin_id, coin_name, coin_symbol, coin_image")
         .eq("user_id", user.id)
-        .range(offset, offset + limit - 1),  // paginate watchlist from DB
+        .range(offset, offset + limit - 1),
       supabase.from("alerts").select("coin_id").eq("user_id", user.id),
       supabase.from("holdings").select("coin_id, amount").eq("user_id", user.id),
     ]);
 
-  // get total count separately for pagination
-  const { count: totalCount } = await supabase
-    .from("watchlist")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id);
-
-  if (!watchlist || watchlist.length === 0) {
+  if ((!watchlist || watchlist.length === 0) && (!holdings || holdings.length === 0)) {
     return NextResponse.json({ coins: [], total: 0, page, limit });
   }
 
-  const watchlistIds = new Set(watchlist.map((i) => i.coin_id));
+  const watchlistIds = new Set(watchlist?.map((i) => i.coin_id) ?? []);
   const holdingIds = new Set(holdings?.map((i) => i.coin_id) ?? []);
   const allCoinIds = [...new Set([...watchlistIds, ...holdingIds])];
   const ids = allCoinIds.join(",");
-  const CACHE_KEY = `watchlist:${user.id}:page:${page}`;
+
+  const totalCount = allCoinIds.length;
+
+  const CACHE_KEY = `watchlist:coins:${user}:page:${page}`;
 
   let markets: MarketCoin[];
   const cached = await redis.get(CACHE_KEY);
@@ -117,10 +114,10 @@ export async function GET(req: Request) {
       holdingsValueChange24h,
     };
   });
-
+  
   return NextResponse.json({
     coins: result,
-    total: totalCount ?? 0,
+    total: totalCount,
     page,
     limit,
   });

@@ -5,22 +5,23 @@ export const usePortfolioStats = () =>
   useQuery({
     queryKey: ['portfolio-stats'],
     queryFn: dashboardApi.fetchPortfolioStats,
-    refetchInterval: 30000,
+    refetchInterval: 60000,
     staleTime:  1000 * 60 * 5,
   })
 
-export const useMarketPrices = () =>
+export const useWatchlistPrices = () =>
   useQuery({
-    queryKey: ['market-prices'],
-    queryFn: dashboardApi.fetchMarketPrices,
-    refetchInterval: 30000,
-    staleTime:  1000 * 30,
+    queryKey: ['watchlist-prices'],
+    queryFn: dashboardApi.fetchWatchlistPrices,
+    refetchInterval: 60000,
+    staleTime:  1000 * 60 * 2,
   })
 
 export const useRecentTransactions = () =>
   useQuery({
     queryKey: ['recent-transactions'],
     queryFn: dashboardApi.fetchRecentTransactions,
+    refetchInterval: 60000,
     staleTime:  1000 * 60 * 2,
   })
 

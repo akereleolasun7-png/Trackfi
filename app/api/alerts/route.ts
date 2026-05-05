@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
 import { redis } from "@/lib/redis";
 import { MarketCoin } from "@/types";
-import { createClient } from "@/utils/supabase/server";
 
-const CACHE_KEY = "watchlist:list";
 const CACHE_TTL = 300;
 
 interface CoinGeckoResponse {
@@ -15,71 +14,115 @@ interface CoinGeckoResponse {
   price_change_percentage_24h: number;
   price_change_percentage_7d_in_currency: number;
   market_cap: number;
-  sparkline_in_7d?: {
-    price: number[];
-  };
 }
 
-export async function GET() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  
-  let markets: MarketCoin[];
-  const cached = await redis.get(CACHE_KEY);
-  if (cached) { console.log("Cache hit")
-    markets = JSON.parse(cached);
-  } else {
-     console.log("Cache missed")
-    const res = await fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=24h,7d",
-      {
-        headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! },
-      },
-    );
+export async function GET(req: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!res.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch markets" },
-        { status: 500 },
-      );
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const data: CoinGeckoResponse[] = await res.json();
-    
-    markets = data.map((coin) => ({
-      id: coin.id,
-      symbol: coin.symbol,
-      name: coin.name,
-      image: coin.image,
-      current_price: coin.current_price,
-      price_change_percentage_24h: coin.price_change_percentage_24h,
-      price_change_percentage_7d: coin.price_change_percentage_7d_in_currency,
-      market_cap: coin.market_cap,
-      sparkline: coin.sparkline_in_7d?.price ?? [],
-      isWatchlisted: false,
-      hasAlert: false,
-    }));
-    
-    const result = await redis.set(CACHE_KEY, JSON.stringify(markets), "EX", CACHE_TTL);
-    console.log("Fetched market list from CoinGecko and cached in Redis");
-    console.log("Redis set result:", result)
+    const { searchParams } = new URL(req.url);
+    const limit = searchParams.get("limit")
+      ? Number(searchParams.get("limit"))
+      : undefined;
+
+    let query = supabase
+      .from("alerts")
+      .select(
+        "id, coin_id, condition, target_price, created_at, triggered_recently, last_price, status, in_app, email, email_address",
+      )
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    const { data: alerts, error } = await query;
+
+    if (error) {
+      console.error("❌ Supabase error:", error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    if (!alerts?.length) return NextResponse.json([]);
+
+    const CACHE_KEY = `alerts:coins:${user.id}`;
+
+    let cached = null;
+    try {
+      cached = await redis.get(CACHE_KEY);
+    } catch (redisErr) {
+      console.error("❌ Redis error:", redisErr);
+    }
+
+    let marketMap: Map<string, MarketCoin>;
+
+    if (cached) {
+      const markets: MarketCoin[] = JSON.parse(cached);
+      marketMap = new Map(markets.map((c) => [c.id, c]));
+    } else {
+      const ids = [...new Set(alerts.map((a) => a.coin_id))].join(",");
+
+      const res = await fetch(
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=false`,
+        { headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! } },
+      );
+
+      if (!res.ok) {
+        return NextResponse.json(
+          alerts.map((a) => ({
+            ...a,
+            coin_name: a.coin_id,
+            coin_symbol: "",
+            coin_image: "",
+            current_price: null,
+          })),
+        );
+      }
+
+      const data: CoinGeckoResponse[] = await res.json();
+
+      const markets: MarketCoin[] = data.map((coin) => ({
+        id: coin.id,
+        symbol: coin.symbol,
+        name: coin.name,
+        image: coin.image,
+        current_price: coin.current_price,
+        price_change_percentage_24h: coin.price_change_percentage_24h,
+        price_change_percentage_7d: coin.price_change_percentage_7d_in_currency,
+        market_cap: coin.market_cap,
+        sparkline: [],
+        isWatchlisted: false,
+        hasAlert: true,
+      }));
+
+      await redis.set(CACHE_KEY, JSON.stringify(markets), "EX", CACHE_TTL);
+      marketMap = new Map(markets.map((c) => [c.id, c]));
+    }
+
+    const enriched = alerts.map((alert) => {
+      const coin = marketMap.get(alert.coin_id);
+      return {
+        ...alert,
+        coin_name: coin?.name ?? alert.coin_id,
+        coin_symbol: coin?.symbol ?? "",
+        coin_image: coin?.image ?? "",
+        current_price: coin?.current_price ?? null,
+      };
+    });
+    return NextResponse.json(enriched);
+  } catch (err) {
+    console.error("❌ Unhandled error in /api/alerts:", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
-   const [{ data: watchlist }, { data: alerts }] = await Promise.all([
-    supabase.from("watchlist").select("coin_id, holdings").eq("user_id", user.id),
-    supabase.from("alerts").select("coin_id").eq("user_id", user.id),
-  ]);
-
-  const watchlistIds = new Set(watchlist?.map((i) => i.coin_id) ?? []);
-  const alertIds = new Set(alerts?.map((i) => i.coin_id) ?? []);
-
-  const result = markets.map((coin) => ({
-    ...coin,
-    isWatchlisted: watchlistIds.has(coin.id),
-    
-    hasAlert: alertIds.has(coin.id),
-  }));
-  return NextResponse.json(result);
 }

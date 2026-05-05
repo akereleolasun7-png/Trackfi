@@ -1,3 +1,4 @@
 import "dotenv/config"
 import "./transactionsWorker"
-import "./emailWorker" 
+import "./emailWorker"
+import './alertsWorker'

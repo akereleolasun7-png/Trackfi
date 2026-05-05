@@ -1,19 +1,17 @@
 "use client";
 import React from "react";
-import { ArrowRight, Link } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { alerts } from "@/lib/constants/landing";
 import { useGsapFadeLeft, useGsapFadeRight } from "@/hooks/useGsapAnimation";
-
+import Link from 'next/link'
 export function AlertsSection() {
-  const textRef = useGsapFadeLeft();
-  const imageRef = useGsapFadeRight();
 
   return (
     <section className="bg-[#0a0a0a] py-24 px-6">
       <div className="max-w-7xl mx-auto flex flex-col justify-evenly md:flex-row items-center gap-16">
         {/* Left — text */}
-        <div ref={textRef} className=" min-w-0 max-w-lg">
+        <div  className=" min-w-0 max-w-lg">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-400 text-xs font-medium mb-6">
             {alerts.badge}
           </div>
@@ -42,14 +40,14 @@ export function AlertsSection() {
         </div>
 
         {/* Right — image */}
-        <div ref={imageRef} className="min-w-0 relative">
-          <div className="absolute inset-0 bg-orange-500/5 rounded-3xl blur-2xl scale-110" />
+        <div className="min-w-0 relative">
+          <div className="absolute inset-0 bg-orange-500/5  rounded-3xl blur-2xl scale-110" />
           <Image
-            src="/images/person1.jpg"
+            src="/images/alerts-iphone.png"
             alt="Price alerts UI"
-            className="relative z-10 w-full rounded-2xl border border-white/10 shadow-2xl"
-            height={600}
-            width={600}
+            className="w-[12em] md:w-[15em]  relative z-10 rounded-2xl shadow-2xl"
+            height={400}
+            width={400}
           />
         </div>
       </div>

@@ -29,8 +29,8 @@ export async function POST(
       .upsert({
         user_id: user.id,
         coin_id: coinId,
-        value,
-        type,
+        target_price:value,
+        condition:type,
         }, { onConflict: "user_id,coin_id" })
 
     if (error) {

@@ -1,33 +1,36 @@
 "use client";
 import React, { useState } from "react";
-import { X, Bell } from "lucide-react";
-import { AlertCondition } from "@/types";
+import { X, Bell, ChevronDown } from "lucide-react";
+import { AlertCondition, WatchlistCoin } from "@/types";
 import { formatCrypto } from "@/lib/helpers/formatPrice";
+import Image from "next/image";
 interface SetAlertModalProps {
-  coinSymbol: string;
-  coinPrice: number;
+  coins: WatchlistCoin[];
   onClose: () => void;
-  onCreate: (type: AlertCondition, value: number) => void;
+  onCreate: (type: AlertCondition, value: number, coinId: string) => void;
 }
 
 export function SetAlertModal({
-  coinSymbol,
-  coinPrice,
+  coins,
   onClose,
   onCreate,
 }: SetAlertModalProps) {
   const [alertType, setAlertType] = useState<AlertCondition>("above");
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
+  const [selectedCoin, setSelectedCoin] = useState(coins[0] ?? null); // ✅ local state
+  const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     const num = parseFloat(value);
     if (!value || isNaN(num) || num <= 0) {
       setError("Please enter a value greater than 0");
       return;
     }
     setError("");
-    onCreate(alertType, num);
+    setIsCreating(true);
+    await onCreate(alertType, num, selectedCoin.id);
+    setIsCreating(false);
     setValue("");
     onClose();
   };
@@ -65,7 +68,7 @@ export function SetAlertModal({
               <Bell className="w-4 h-4 text-primary" />
             </div>
             <h2 className="text-lg font-semibold text-white">
-              Set Alert for {coinSymbol}
+              Set Alert for {selectedCoin?.symbol}
             </h2>
           </div>
           <button
@@ -75,7 +78,25 @@ export function SetAlertModal({
             <X className="w-4 h-4 text-white/40" />
           </button>
         </div>
+        <div className="mb-6">
+          <select
+            value={selectedCoin?.id}
+            onChange={(e) =>
+              setSelectedCoin(
+                coins.find((c) => c.id === e.target.value) ?? coins[0],
+              )
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 appearance-none cursor-pointer"
+          >
+            {coins.map((c) => (
+              <option key={c.id} value={c.id} className="bg-[#111]">
+                {c.name} ({c.symbol})
+              </option>
+            ))}
+          </select>
 
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+        </div>
         {/* Alert Type Selection */}
         <div className="mb-6">
           <p className="text-sm text-white/60 mb-3">Alert when price is:</p>
@@ -106,16 +127,21 @@ export function SetAlertModal({
           </label>
           <div className="relative">
             {alertType !== "change" && (
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 ">
                 $
               </span>
             )}
             <input
               type="number"
               value={value}
+              min={0}
+              max={alertType === "change" ? 100 : undefined}
+              step={alertType === "change" ? 1 : 0.01}
               onChange={(e) => setValue(e.target.value)}
               placeholder={
-                alertType === "change" ? "5" : `${formatCrypto(coinPrice)}`
+                alertType === "change"
+                  ? "5"
+                  : `${formatCrypto(selectedCoin?.current_price)}`
               }
               className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-white/20
                 focus:outline-none focus:border-primary/40 focus:bg-white/10 transition-colors
@@ -140,10 +166,22 @@ export function SetAlertModal({
           </button>
           <button
             onClick={handleCreate}
-            disabled={!value}
+            disabled={!value || isCreating}
             className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-black text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
-            Create Alert
+            {isCreating ? (
+              <span className="flex items-center justify-center gap-2">
+                <Image
+                  src={"/logos/Spinner.svg"}
+                  alt="loading svg"
+                  width={20}
+                  height={20}
+                />
+                Creating...
+              </span>
+            ) : (
+              "Create Alert"
+            )}
           </button>
         </div>
       </div>

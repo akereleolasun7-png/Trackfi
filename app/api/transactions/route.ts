@@ -23,7 +23,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const period = searchParams.get("period") ?? "30";
   const page = Number(searchParams.get("page") ?? 1);
-  const limit =  20;
+  const limit =  Number(searchParams.get("limit") ?? 20);
   const offset = (page - 1) * limit;
 
   

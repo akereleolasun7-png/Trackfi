@@ -1,0 +1,201 @@
+// alertsWorker.js
+import { Queue, Worker } from "bullmq"
+import Redis from "ioredis"
+import { createClient } from "@supabase/supabase-js";
+import { Resend } from "resend";
+import webpush from "web-push";
+export interface MarketCoin {
+  id: string;
+  symbol: string;
+  name: string;
+  image?: string;
+  current_price: number;
+  price_change_percentage_24h: number;
+  price_change_percentage_7d: number;
+  market_cap: number;
+  sparkline: number[];
+}
+
+if (!process.env.REDIS_URL) throw new Error("REDIS_URL is required");
+if (!process.env.MORALIS_API_KEY) throw new Error("MORALIS_API_KEY is required");
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY)
+  throw new Error("Supabase credentials are required");
+if (!process.env.RESEND_API_KEY) {
+  throw new Error("RESEND_API_KEY is required");
+}
+if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY || !process.env.VAPID_MAILTO)
+  throw new Error("VAPID credentials are required");
+
+webpush.setVapidDetails(
+  process.env.VAPID_MAILTO,
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY,
+)
+const connection = new Redis(process.env.REDIS_URL, {
+  maxRetriesPerRequest: null,
+  tls: {},
+});
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+);
+
+const alertQueue = new Queue("alert-checks", { connection })
+
+
+async function startAlertWorker() {
+
+  await alertQueue.obliterate({ force: true }).catch(() => {})
+  
+  await alertQueue.add(
+    "check-alerts",
+    {},
+    {
+      repeat: { every: 60000 },
+      jobId: "check-alerts-repeat",
+    }
+  )
+
+  console.log("✅ Alert repeat job registered")
+}
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const alertWorker = new Worker(
+  "alert-checks",
+  async (job) => {
+    console.log("🔔 Checking alerts...")
+      const { data: alerts, error } = await supabase
+      .from("alerts")
+      .select("*")
+      .eq("status", "active")
+
+    if (error) {
+      console.error("Failed to fetch alerts:", error.message)
+      return
+    }
+
+    if (!alerts?.length) {
+      console.log("No active alerts")
+      return
+    }
+
+    // 2. get unique coin ids
+    const ids = [...new Set(alerts.map((a) => a.coin_id))].join(",")
+
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=true&price_change_percentage=24h,7d`,
+      { headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! } }
+    );
+    if (!res.ok) {
+        console.error("Failed to fetch market data for alerts:", res.statusText);
+        return;
+    }
+     const coins = await res.json()
+    const priceMap = new Map(coins.map((c: MarketCoin) => [c.id, c.current_price]))
+
+    
+    for (const alert of alerts) {
+      const currentPrice = priceMap.get(alert.coin_id)
+      if (!currentPrice) continue
+
+      const triggered =
+        (alert.condition === "above" && currentPrice >= alert.target_price) ||
+        (alert.condition === "below" && currentPrice <= alert.target_price)
+
+      if (!triggered) continue
+
+      console.log(`🔔 Alert triggered: ${alert.coin_id} ${alert.condition} ${alert.target_price}`)
+
+     
+
+      await supabase
+        .from("alerts")
+        .update({
+          triggered_recently: true,
+          last_price: currentPrice,
+          status: "paused", 
+        })
+        .eq("id", alert.id)
+
+        await supabase
+  .from('notifications')
+  .insert({
+    user_id: alert.user_id,
+    alert_id: alert.id,
+    coin_id: alert.coin_id,
+    type: 'price_alert',
+    title: `${alert.coin_id} Alert Triggered`,
+    message: `${alert.coin_id} is ${alert.condition} $${alert.target_price.toLocaleString()}. Current price: $${currentPrice.toLocaleString()}`,
+    is_read: false,
+  })
+
+        // fetch all push subscriptions for this user
+  const { data: subscriptions } = await supabase
+    .from("push_subscriptions")
+    .select("subscription")
+    .eq("user_id", alert.user_id)
+
+  if (subscriptions?.length) {
+    const payload = JSON.stringify({
+      title: `${alert.coin_id} Alert Triggered`,
+      message: `${alert.coin_id} is ${alert.condition} $${alert.target_price.toLocaleString()}. Current: $${currentPrice.toLocaleString()}`,
+      url: "/alerts",
+    })
+
+    await Promise.allSettled(
+      subscriptions.map((row) =>
+        webpush.sendNotification(row.subscription, payload).catch(async (err) => {
+          // subscription expired or invalid — remove it
+          if (err.statusCode === 404 || err.statusCode === 410) {
+            await supabase
+              .from("push_subscriptions")
+              .delete()
+              .eq("subscription->>endpoint", row.subscription.endpoint)
+            console.log(`🗑️ Removed expired subscription for ${alert.user_id}`)
+          }
+        })
+      )
+    )
+    console.log(`📲 Push sent to ${subscriptions.length} device(s) for ${alert.coin_id}`)
+  }
+  
+      if (alert.email && alert.email_address) {
+        await resend.emails.send({
+          from: "Trackfi <onboarding@resend.dev>",
+          to: alert.email_address,
+          subject: `🔔 Alert Triggered: ${alert.coin_id} is ${alert.condition} $${alert.target_price}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h1 style="color: #111;">Price Alert Triggered 🔔</h1>
+              <p>Your alert for <strong>${alert.coin_id}</strong> has been triggered.</p>
+              <p>Condition: Price <strong>${alert.condition}</strong> $${alert.target_price.toLocaleString()}</p>
+              <p>Current Price: <strong>$${currentPrice.toLocaleString()}</strong></p>
+              <hr />
+              <p style="color: #666; font-size: 14px;">— The Trackfi Team</p>
+            </div>
+          `,
+        })
+        console.log(`📧 Alert email sent for ${alert.coin_id}`)
+      }
+    }
+  },
+  {
+    connection,
+    concurrency: 1,
+    removeOnComplete: { count: 100 },
+    removeOnFail: { count: 50 },
+  }
+)
+
+alertWorker.on("completed", (job) => {
+  console.log(`✅ Alert check ${job.id} done`)
+})
+
+alertWorker.on("failed", (job, err) => {
+  console.error(`❌ Alert check ${job?.id} failed:`, err.message)
+})
+
+startAlertWorker()
+
+export { alertQueue }

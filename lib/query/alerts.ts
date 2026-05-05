@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchAlerts, fetchAlertStats } from "@/lib/api/alerts";
+import { fetchAlerts } from "@/lib/api/alerts";
 
 export const useAlerts = () =>
   useQuery({
@@ -10,11 +10,3 @@ export const useAlerts = () =>
     retry: false,
   });
 
-export const useAlertStats = () =>
-  useQuery({
-    queryKey: ["alert-stats"],
-    queryFn: fetchAlertStats,
-    staleTime: 1000 * 60 * 5,
-    refetchInterval: false,
-    retry: false,
-  });

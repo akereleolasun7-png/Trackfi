@@ -3,19 +3,22 @@ export type AlertStatus = 'active' | 'paused'
 
 export interface PriceAlert {
   id: string
-  coin: string
-  symbol: string
+  coin_id: string
   condition: AlertCondition
-  targetPrice: number
-  lastPrice?: number
+  target_price: number
+  last_price?: number
   status: AlertStatus
-  createdAt: string
-  triggeredRecently?: boolean
-  deliveryChannels: {
-    inApp: boolean
-    email: boolean
-  }
-  emailAddress?: string
+  created_at: string
+  triggered_recently?: boolean | null
+  in_app: boolean
+  email: boolean
+  email_address?: string | null
+}
+export interface EnrichedAlert extends PriceAlert {
+  coin_name: string
+  coin_symbol: string
+  coin_image: string
+  current_price: number | null
 }
 
 export interface AlertStats {
@@ -25,25 +28,20 @@ export interface AlertStats {
 }
 
 export interface CreateAlertInput {
-  coin: string
-  symbol: string
+  coin_id: string
   condition: AlertCondition
-  targetPrice: number
-  deliveryChannels: {
-    inApp: boolean
-    email: boolean
-  }
-  emailAddress?: string
-  status:string
+  target_price: number
+  in_app: boolean
+  email: boolean
+  email_address?: string
+  status:AlertStatus;
 }
 
 export interface UpdateAlertInput {
   condition?: AlertCondition
-  targetPrice?: number
+  target_price?: number
   status?: AlertStatus
-  deliveryChannels?: {
-    inApp: boolean
-    email: boolean
-  }
-  emailAddress?: string
+  in_app?: boolean
+  email?: boolean
+  email_address?: string
 }

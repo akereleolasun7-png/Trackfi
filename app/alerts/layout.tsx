@@ -18,40 +18,47 @@ export async function generateMetadata(): Promise<Metadata> {
     description: "Track your crypto portfolio in real time",
   };
 }
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // const supabase = await createClient();
+  const supabase = await createClient();
 
-  // const { data: { user }, error } = await supabase.auth.getUser();
+  const { data: { user }, error } = await supabase.auth.getUser();
 
-  // if (!user || error) {
-  //   redirect("/login");
-  // }
+  if (!user || error) {
+    redirect("/login");
+  }
 
-  const user = {
-    id: "123",
-    email: "akerel@gmail.com",
-    name: "ray",
-    packageType: "Premium",
-    image: "/images/person1.jpg",
+   const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+   const mergedUser = {
+    ...user,
+    name: profile?.name,
+    image: profile?.image,
+    package_type: profile?.package_type,
   };
+
   const NAVBAR_HEIGHT = 20;
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <AppSidebar user={user} />
+      <AppSidebar user={mergedUser} />
       <SidebarInset>
-        <div style={{ paddingTop: NAVBAR_HEIGHT }}>
-          <Providers>{children}</Providers>
-        </div>
+        
         <NavbarDashboard pageTitle="Alerts" />
-        {/* <UserProvider user={user} staff={staff}>
+        <UserProvider user={mergedUser}>
+          <Providers>
+            <div style={{ paddingTop: NAVBAR_HEIGHT }}>
+              {children}
+            </div>
+          </Providers>
           
-          
-        </UserProvider> */}
+        </UserProvider>
       </SidebarInset>
     </SidebarProvider>
   );

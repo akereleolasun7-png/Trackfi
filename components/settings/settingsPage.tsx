@@ -38,8 +38,8 @@ export default function SettingsPage() {
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar Navigation */}
-        <div className="lg:w-64">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sticky top-24 space-y-1">
+        <div className="fixed  lg:bg-none bottom-0 left-0 right-0 z-40 lg:static lg:w-64 lg:bottom-auto lg:left-auto lg:right-auto lg:z-auto">
+          <div className="grid grid-cols-4 lg:grid-cols-1 backdrop-blur-md shadow-sm bg-white/5 border border-white/10 rounded-t-2xl lg:rounded-2xl p-4 lg:sticky lg:top-24 gap-1 border-b lg:border-b">
             {[
               { id: "profile", label: "Profile", icon: User },
               { id: "notifications", label: "Notifications", icon: Bell },
@@ -66,7 +66,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1">
+        <div className="flex-1 pb-24 lg:pb-0">
           {activeTab === "profile" && profile && (
             <ProfileForm profile={profile} />
           )}

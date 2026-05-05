@@ -35,7 +35,7 @@ export function FeaturesSection() {
   }, []);
 
   return (
-    <section className="bg-[#0a0a0a] py-24 px-6">
+    <section className="bg-[#0a0a0a] py-24 px-6 mt-4" id="features">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2
@@ -49,7 +49,7 @@ export function FeaturesSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
@@ -58,7 +58,7 @@ export function FeaturesSection() {
                 ref={(el) => {
                   if (el) cardsRef.current[index] = el;
                 }}
-                className={`${feature.span} bg-white/[0.03] border border-white/10 rounded-2xl p-6 hover:border-orange-500/20 hover:bg-white/[0.05] transition-all duration-300`}
+                className={`bg-white/[0.03] border border-white/10 rounded-2xl p-6 hover:border-orange-500/20 hover:bg-white/[0.05] transition-all duration-300`}
               >
                 <div className="w-9 h-9 rounded-xl bg-orange-500/15 flex items-center justify-center mb-4">
                   <Icon className="w-4 h-4 text-orange-400" />
@@ -69,15 +69,15 @@ export function FeaturesSection() {
                 <p className="text-white/40 text-sm leading-relaxed">
                   {feature.description}
                 </p>
-                {feature.image && (
-                  <div className="mt-6 rounded-xl overflow-hidden border border-white/10">
+                {/* {feature.image && (
+                  <div className="mt-6 rounded-xl overflow-hidden ">
                     <img
                       src={feature.image}
                       alt={feature.title}
                       className="w-full object-cover"
                     />
                   </div>
-                )}
+                )} */}
               </div>
             );
           })}

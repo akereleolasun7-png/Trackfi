@@ -25,6 +25,7 @@ export interface RecentTransactionItem {
 
 export interface MarketCoinItem {
   id: string;
+  image: string;
   symbol: string;
   name: string;
   current_price: number;
@@ -34,9 +35,10 @@ export interface MarketCoinItem {
 
 export interface SmartAlertItem {
   id: string;
-  type: "volatility" | "whale" | "target" | "limit";
-  title: string;
-  description: string;
-  triggered: boolean;
-  action?: string;
+  coin_id: string;
+  condition: string;
+  target_price: number;
+  status: string;
+  in_app: boolean;
+  email: boolean;
 }

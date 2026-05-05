@@ -1,91 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useIntegrations } from "@/lib/query/settings";
 import {
-  connectIntegration,
-  syncIntegration,
-  disconnectIntegration,
-} from "@/lib/api/settings";
+  useConnectIntegration,
+  useSyncIntegration,
+  useDisconnectIntegration,
+} from "@/hooks/useIntegrationActions";
 import { Zap, Check, Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import { IntegrationCard } from "./integrationCard";
 import { defaultIntegrations } from "@/lib/constants/Integrations";
 import { Integration } from "@/types/settings";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function IntegrationsPage() {
-  const queryClient = useQueryClient();
   const { data: integrations, isLoading } = useIntegrations();
-  const [syncing, setSyncing] = useState<string | null>(null);
-  const [disconnecting, setDisconnecting] = useState<string | null>(null);
-  const [settingPrimary, setSettingPrimary] = useState<string | null>(null);
+
+  const connect = useConnectIntegration();
+  const sync = useSyncIntegration();
+  const disconnect = useDisconnectIntegration();
 
   const integrationsData: Integration[] = integrations || defaultIntegrations;
-
-  const handleSync = async (id: string | null) => {
-    if (!id) return;
-    setSyncing(id);
-    try {
-      await syncIntegration(id);
-      toast.success(
-        "Sync started successfully! Your transactions will update shortly.",
-      );
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to sync integration";
-      toast.error(message);
-      console.error("Sync error:", error);
-    } finally {
-      setSyncing(null);
-    }
-  };
-
-  const handleConnect = async (provider: string, address: string) => {
-    try {
-      await connectIntegration(provider, address);
-      await queryClient.invalidateQueries({
-        queryKey: ["settings-integrations"],
-      });
-      toast.success(
-        "Integration connected successfully! Syncing transactions...",
-      );
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to connect integration";
-      toast.error(message);
-      console.error("Connection error:", error);
-    }
-  };
-  const handleDisconnect = async (id: string) => {
-    if (!id) return;
-    setDisconnecting(id);
-    try {
-      await disconnectIntegration(id);
-      await queryClient.invalidateQueries({
-        queryKey: ["settings-integrations"],
-      });
-      toast.success("Integration disconnected successfully");
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to disconnect integration";
-      toast.error(message);
-      console.error("Disconnection error:", error);
-    } finally {
-      setDisconnecting(null);
-    }
-  };
-
-  const connectedIntegrations = integrationsData.filter(
-    (i) => i.status === "connected",
-  );
-  const availableIntegrations = integrationsData.filter(
-    (i) => i.status !== "connected",
-  );
+  const connectedIntegrations = integrationsData.filter((i) => i.status === "connected");
+  const availableIntegrations = integrationsData.filter((i) => i.status !== "connected");
 
   if (isLoading) {
     return (
@@ -100,8 +36,7 @@ export default function IntegrationsPage() {
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">Integrations</h1>
         <p className="text-white/60 text-sm md:text-base">
-          Connect your exchange accounts to sync transactions and portfolio
-          data.
+          Connect your exchange accounts to sync transactions and portfolio data.
         </p>
       </div>
 
@@ -120,13 +55,18 @@ export default function IntegrationsPage() {
               <IntegrationCard
                 key={integration.id ?? integration.provider}
                 integration={integration}
-                onConnect={(address) =>
-                  handleConnect(integration.provider, address)
+                onConnect={(credentials) =>
+                  connect.mutate({ provider: integration.provider, credentials })
                 }
-                onDisconnect={() => handleDisconnect(integration.id!)}
-                onSync={() => handleSync(integration.id)}
-                isSyncing={syncing === integration.id}
-                isDisconnecting={disconnecting === integration.id}
+                onDisconnect={() => disconnect.mutate(integration.id!)}
+                onSync={() => sync.mutate(integration.id!)}
+                isSyncing={sync.isPending && sync.variables === integration.id}
+                isDisconnecting={
+                  disconnect.isPending && disconnect.variables === integration.id
+                }
+                isConnecting={connect.isPending &&
+                  connect.variables?.provider === integration.provider
+                }
               />
             ))}
           </div>
@@ -141,11 +81,14 @@ export default function IntegrationsPage() {
             <IntegrationCard
               key={integration.provider}
               integration={integration}
-              onConnect={(address) =>
-                handleConnect(integration.provider, address)
+              onConnect={(credentials) =>
+                connect.mutate({ provider: integration.provider, credentials})
               }
-              onSync={() => handleSync(integration.id)}
-              isSyncing={syncing === integration.id}
+              onSync={() => sync.mutate(integration.id!)}
+              isSyncing={sync.isPending && sync.variables === integration.id}
+              isConnecting={connect.isPending &&
+                connect.variables?.provider === integration.provider
+              }
             />
           ))}
         </div>
@@ -158,11 +101,9 @@ export default function IntegrationsPage() {
           <div>
             <h3 className="font-semibold mb-2">How to Connect</h3>
             <ol className="text-sm text-white/60 space-y-1 list-decimal list-inside">
-              <li>
-                Click &quot;Connect&quot; on the wallet you want to integrate
-              </li>
-              <li>Paste your wallet address in the connection form</li>
-              <li>Your transactions will sync automatically</li>
+              <li>Click &quot;Connect&quot; on the exchange you want to integrate</li>
+              <li>Enter your wallet address in the input field</li>
+              <li>Click &quot;Send&quot; to connect and start syncing transactions</li>
             </ol>
           </div>
         </div>

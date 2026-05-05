@@ -1,9 +1,9 @@
 export type NotificationChannel = "email" | "push" | "sms";
 export type CurrencyPreference = "USD" | "EUR" | "GBP" | "JPY" | "AUD";
 export type IntegrationProvider =
-  | "binance"
-  | "metamask"
-  | "trustwallet";
+  | "solana"
+  | "ethereum"
+  | "bitcoin"
 export type IntegrationStatus = "connected" | "disconnected" | "error" | "coming_soon";
 
 export interface UserProfile {

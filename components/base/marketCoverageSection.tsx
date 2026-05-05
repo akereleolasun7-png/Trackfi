@@ -6,26 +6,26 @@ import { bullets, marketCoverage } from "@/lib/constants/landing";
 import { useGsapFadeLeft, useGsapFadeDown ,  useGsapFadeRight } from "@/hooks/useGsapAnimation";
 
 export function MarketCoverageSection() {
-  const imageRef = useGsapFadeDown();
-  const textRef = useGsapFadeRight();
+  // const imageRef = useGsapFadeDown();
+  // const textRef = useGsapFadeRight();
 
   return (
     <section className="bg-[#0a0a0a] py-24 px-6">
       <div className="max-w-7xl mx-auto flex flex-col justify-evenly md:flex-row items-center gap-16">
         {/* Left — image */}
-        <div ref={imageRef} className=" relative">
+        <div className=" relative">
           <div className="absolute inset-0 bg-orange-500/5 rounded-3xl blur-2xl scale-110" />
           <Image
-            src="/images/image1.jpg"
+            src="/images/markets.png"
             alt="Live coin prices"
-            className="relative z-10 w-full rounded-2xl border border-white/10 shadow-2xl"
-            height={20}
-            width={20}
+            className="w-[22em] md:w-[30em]  relative z-10 rounded-2xl shadow-2xl"
+            height={400}
+            width={400}
           />
         </div>
 
         {/* Right — text */}
-        <div ref={textRef} className=" max-w-lg">
+        <div className=" max-w-lg">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-400 text-xs font-medium mb-6">
             {marketCoverage.badge}
           </div>

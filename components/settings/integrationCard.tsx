@@ -9,7 +9,6 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
-  Send,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -20,6 +19,7 @@ interface IntegrationCardProps {
   onDisconnect?: () => void;
   isSyncing?: boolean;
   isDisconnecting?: boolean;
+  isConnecting?: boolean;
 }
 
 export function IntegrationCard({
@@ -29,11 +29,10 @@ export function IntegrationCard({
   onDisconnect,
   isSyncing,
   isDisconnecting,
-  
+  isConnecting, // 👈 no more local useState for this
 }: IntegrationCardProps) {
   const [showAddressInput, setShowAddressInput] = useState(false);
   const [address, setAddress] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isConnected = integration.status === "connected";
   const isComingSoon = integration.status === "coming_soon";
@@ -73,25 +72,16 @@ export function IntegrationCard({
     }
   };
 
-  const handleConnectClick = () => {
-    setShowAddressInput(true);
-  };
-
-  const handleSubmitAddress = async () => {
-    if (!address.trim()) return;
-    setIsSubmitting(true);
+  const handleSend = () => {
     try {
-      await onConnect?.(address);
-      setAddress("");
-      setShowAddressInput(false);
+      if (!address.trim()) return;
+    onConnect?.(address.trim());
+    
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Connection failed";
-      console.error("Connection failed:", error);
-    } finally {
-      setIsSubmitting(false);
+        console.log(error)
     }
-  };
+
+  }
 
   return (
     <div
@@ -108,7 +98,6 @@ export function IntegrationCard({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          {/* Icon */}
           <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
             {integration.icon ? (
               <Image
@@ -160,7 +149,6 @@ export function IntegrationCard({
               ? new Date(integration.lastSyncedAt).toLocaleDateString()
               : "Never"}
           </p>
-        
         </div>
       )}
 
@@ -182,34 +170,32 @@ export function IntegrationCard({
             <Clock className="w-4 h-4 mr-2" />
             Coming Soon
           </Button>
-        ) : !isConnected ? (
-          showAddressInput ? (
-            <div className="flex-1 flex gap-2">
-              <input
-                type="text"
-                placeholder="Paste wallet address..."
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:border-primary/50 transition-colors"
-              />
-              <Button
-                onClick={handleSubmitAddress}
-                disabled={!address.trim() || isSubmitting}
-                className="w-15 h-10 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-black font-bold py-2 px-4 rounded-lg flex items-center gap-2 cursor-pointer"
-              >
-                <Send
-                  className={`w-4 h-4 ${isSubmitting ? "animate-spin" : ""}`}
-                />
-              </Button>
-            </div>
-          ) : (
+        ) : !isConnected && !isConnecting && !showAddressInput ? (
+          <Button
+            onClick={() => setShowAddressInput(true)}
+            className="flex-1 bg-primary hover:bg-primary/90 text-black font-bold py-2 rounded-lg cursor-pointer"
+          >
+            Connect
+          </Button>
+        ) :( showAddressInput|| isConnecting ) && !isConnected ? (
+          <>
+            <input
+              type="text"
+              placeholder="Enter wallet address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+              className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:border-primary"
+            />
             <Button
-              onClick={handleConnectClick}
-              className="flex-1 bg-primary hover:bg-primary/90 text-black font-bold py-2 rounded-lg cursor-pointer"
+              onClick={handleSend}
+              disabled={isConnecting || !address.trim()}
+              className="h-10 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-black font-bold px-4 py-2 rounded-lg"
             >
-              Connect
+              {isConnecting ? "Sending..." : "Send"}
             </Button>
-          )
+            
+          </>
         ) : (
           <>
             <Button
@@ -225,7 +211,7 @@ export function IntegrationCard({
             <Button
               onClick={onDisconnect}
               disabled={isDisconnecting}
-              title  = "disconnect integration"
+              title="disconnect integration"
               className="bg-white/10 px-4 py-2 text-red-400 hover:text-red-300 disabled:text-red-400/50 transition-colors"
             >
               <Trash2

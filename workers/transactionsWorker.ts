@@ -6,13 +6,12 @@ interface MoralisTx {
   hash: string;
   from_address: string;
   to_address: string;
-  value: string; // in Wei
-  block_timestamp: string; // ISO string
-  receipt_status: string; // "1" = success, "0" = failed
-  native_price?: {
-    usd_price: number;
-  };
+  value: string;
+  block_timestamp: string;
+  receipt_status: string;
+  native_price?: { usd_price: number };
 }
+
 interface TransactionRow {
   user_id: string;
   coin_id: string;
@@ -25,6 +24,12 @@ interface TransactionRow {
   network: string;
   date: string;
   tx_hash: string;
+}
+
+interface ChainMeta {
+  moralisChain: string;
+  coin_id: string;
+  symbol: string;
 }
 
 // ─── Env Guards ───────────────────────────────────────────────
@@ -43,67 +48,84 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
-const CHAINS: Record<string, string> = {
-  metamask: "eth",
-  trustwallet: "eth",
-  // polygon: "polygon",
-  // base: "base",
+const CHAIN_META: Record<string, ChainMeta> = {
+  ethereum: { moralisChain: "eth",      coin_id: "ethereum",      symbol: "ETH"  },
+  polygon:  { moralisChain: "polygon",  coin_id: "matic-network", symbol: "MATIC" },
+  base:     { moralisChain: "base",     coin_id: "ethereum",      symbol: "ETH"  },
+  bsc:      { moralisChain: "bsc",      coin_id: "binancecoin",   symbol: "BNB"  },
+  arbitrum: { moralisChain: "arbitrum", coin_id: "ethereum",      symbol: "ETH"  },
+  bitcoin:  { moralisChain: "btc",      coin_id: "bitcoin",       symbol: "BTC"  },
+  solana:   { moralisChain: "solana",   coin_id: "solana",        symbol: "SOL"  },
 };
+
+async function fetchChain(walletAddress: string, moralisChain: string): Promise<MoralisTx[]> {
+  let url: string;
+
+  if (moralisChain === "solana") {
+    url = `https://solana-gateway.moralis.io/account/mainnet/${walletAddress}/transactions`;
+  } else {
+    url = `https://deep-index.moralis.io/api/v2.2/wallets/${walletAddress}/history?chain=${moralisChain}&limit=80`;
+  }
+
+  const res = await fetch(url, {
+    headers: { "X-API-Key": process.env.MORALIS_API_KEY! },
+  });
+  const json = await res.json();
+  return json.result ?? [];
+}
 
 const worker = new Worker(
   "transactionQueue",
   async (job) => {
     const { userId, walletAddress, integrationId, lastSyncedAt, provider } = job.data;
-    console.log(`🔄 Syncing ${walletAddress} for user ${userId}`);
+    console.log(`🔄 Syncing ${walletAddress} for user ${userId} on ${provider}`);
 
-    const chain = CHAINS[provider] ?? "eth";
+    const meta = CHAIN_META[provider];
+    if (!meta) throw new Error(`Unsupported provider: ${provider}`);
+
     const lastSync = lastSyncedAt ? new Date(lastSyncedAt).toISOString() : null;
 
     // 1. Fetch from Moralis
-    const url = `https://deep-index.moralis.io/api/v2.2/wallets/${walletAddress}/history?chain=${chain}&limit=50`;
-    let json;
+    let txs: MoralisTx[];
     try {
-      const res = await fetch(url, {
-        headers: { "X-API-Key": process.env.MORALIS_API_KEY! },
-      });
-      json = await res.json();
+      txs = await fetchChain(walletAddress, meta.moralisChain);
+      console.log(`📦 Found ${txs.length} transactions on ${provider}`);
     } catch (err) {
       console.error(`[ERROR] Moralis fetch failed:`, err);
       throw err;
     }
 
-    console.log(`📦 Found ${json.result?.length ?? 0} transactions`);
-
     // 2. Filter since last sync
-    const txs = (json.result ?? []).filter((tx: MoralisTx) => {
+    const newTxs = txs.filter(tx => {
       if (!lastSync) return true;
       return new Date(tx.block_timestamp) > new Date(lastSync);
     });
 
-    console.log(`🆕 New transactions: ${txs.length}`);
+    console.log(`🆕 New transactions: ${newTxs.length}`);
 
-    if (txs.length === 0) {
+    if (newTxs.length === 0) {
       console.log("✅ No new transactions");
       return { success: true, count: 0 };
     }
 
-    // 3. Map Moralis response to your transactions table
-    const rows = txs.map((tx: MoralisTx) => {
+    // 3. Map to schema
+    const rows: TransactionRow[] = newTxs.map(tx => {
       const isSend = tx.from_address?.toLowerCase() === walletAddress.toLowerCase();
-      const type = isSend ? "withdrawal" : "deposit";
-      const amount = Number(tx.value) / 1e18; // ETH value in wei
-      const price = tx.native_price?.usd_price ?? 0; // Moralis includes price
-      
+      const amount = provider === "bitcoin" 
+          ? Number(tx.value) / 1e8 
+          : Number(tx.value) / 1e18;
+      const price = tx.native_price?.usd_price ?? 0;
+
       return {
         user_id: userId,
-        coin_id: "ethereum",
-        symbol: "ETH",
-        type,
+        coin_id: meta.coin_id,
+        symbol: meta.symbol,
+        type: isSend ? "withdrawal" : "deposit",
         amount,
         price,
         total_value: amount * price,
         status: tx.receipt_status === "1" ? "completed" : "failed",
-        network: chain,
+        network: provider,
         date: new Date(tx.block_timestamp).toISOString(),
         tx_hash: tx.hash,
       };
@@ -119,11 +141,11 @@ const worker = new Worker(
     if (insertError) throw new Error(`Insert failed: ${insertError.message}`);
     console.log(`[UPSERT_SUCCESS] Upserted ${rows.length} transactions`);
 
-    // 5. Update holdings in watchlist
-    const coinIds = [...new Set(rows.map((tx: TransactionRow) => tx.coin_id))];
+    // 5. Update holdings
+    const coinIds = [...new Set(rows.map(r => r.coin_id))];
 
     for (const coinId of coinIds) {
-      const { data: allTxs, error: allTxsError } = await supabase
+      const { data: allCoinTxs, error: allTxsError } = await supabase
         .from("transactions")
         .select("type, amount, symbol")
         .eq("user_id", userId)
@@ -132,9 +154,9 @@ const worker = new Worker(
 
       if (allTxsError) throw new Error(`Holdings fetch failed: ${allTxsError.message}`);
 
-      const symbol = allTxs?.[0]?.symbol ?? rows.find((r: TransactionRow) => r.coin_id === coinId)?.symbol;
+      const symbol = allCoinTxs?.[0]?.symbol ?? rows.find(r => r.coin_id === coinId)?.symbol;
 
-      const totalHolding = allTxs?.reduce((acc, tx) => {
+      const totalHolding = allCoinTxs?.reduce((acc, tx) => {
         if (tx.type === "deposit" || tx.type === "buy") return acc + tx.amount;
         if (tx.type === "withdrawal" || tx.type === "sell") return acc - tx.amount;
         return acc;
@@ -143,13 +165,14 @@ const worker = new Worker(
       console.log(`[HOLDINGS] ${coinId}: ${totalHolding} ${symbol}`);
 
       const { error: holdingError } = await supabase
-        .from("watchlist")
+        .from("holdings")
         .upsert(
-          { user_id: userId, coin_id: coinId, symbol, amount: totalHolding },
+          { user_id: userId, coin_id: coinId, amount: totalHolding, source: "wallet" },
           { onConflict: "user_id,coin_id" }
         );
 
       if (holdingError) throw new Error(`Holdings update failed: ${holdingError.message}`);
+      console.log(`[HOLDINGS] Updated ${coinId} to ${totalHolding}`);
     }
 
     // 6. Update last_synced_at

@@ -12,7 +12,7 @@ export const mockAlerts: PriceAlert[] = [
     createdAt: '2024-05-12T00:00:00Z',
     triggeredRecently: true,
     deliveryChannels: { inApp: true, email: false },
-    emailAddress: 'market@user.com',
+    emailAddress: 'market@user.com'
   },
   {
     id: 'alert_002',

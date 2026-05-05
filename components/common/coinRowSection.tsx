@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ArrowUpRight, ArrowDownRight, Star, Bell } from "lucide-react";
+import { ArrowUpRight, Wallet, ArrowDownRight, Star, Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/helpers/formatPrice";
 import { WatchlistCoin } from "@/types/index";
@@ -87,7 +87,7 @@ export function CoinRowSection({
 }: CoinRowProps) {
   const router = useRouter();
   const color = coinColors[coin.symbol] ?? defaultColor;
-  console.log(coin, "coins from markets to details ", coin.id);
+  
   return (
     <tr
       className="border-t border-white/5 hover:bg-white/5 transition-colors group cursor-pointer"
@@ -128,15 +128,14 @@ export function CoinRowSection({
         </div>
       </td>
 
-
       {showHoldings && (
         <td className="py-4 pr-4">
           <p className="text-sm font-medium text-white">
             {coin.holdings != null ? (
               `${coin.holdings} ${coin.symbol.toUpperCase()}`
-             ) : (
-        <span className="text-white/40 text-xs">No holdings</span>
-      )}
+            ) : (
+              <span className="text-white/40 text-xs">No holdings</span>
+            )}
           </p>
           {coin.holdings != null && (
             <p className="text-xs text-white/40">
@@ -145,14 +144,12 @@ export function CoinRowSection({
           )}
         </td>
       )}
-      
+
       <td className="py-4 pr-4 md:table-cell">
         <p className="text-sm font-medium text-white whitespace-nowrap">
           {formatCurrency(coin.current_price)}
         </p>
       </td>
-
-      
 
       <td className="py-4 pr-4">
         <Pct value={coin.price_change_percentage_24h} />
@@ -182,21 +179,31 @@ export function CoinRowSection({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onToggleStar(coin.id);
+              if (!coin.isWatchlisted) onToggleStar(coin.id);
             }}
-            title ="Add to Watchlist"
+            title={
+              coin.isWatchlisted
+                ? "In Watchlist"
+                : coin.holdings
+                  ? "From Wallet"
+                  : "Add to Watchlist"
+            }
             className="p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
           >
-            <Star
-              className={`w-4 h-4 transition-colors ${coin.isWatchlisted ? "text-yellow-400 fill-yellow-400" : "text-white/20 hover:text-yellow-400"}`}
-            />
+            {coin.holdings && !coin.isWatchlisted ? (
+              <Wallet className="w-4 h-4 text-blue-400" />
+            ) : (
+              <Star
+                className={`w-4 h-4 transition-colors ${coin.isWatchlisted ? "text-yellow-400 fill-yellow-400" : "text-white/20 hover:text-yellow-400"}`}
+              />
+            )}
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onToggleAlert(coin.id);
             }}
-            title='Add Alert'
+            title="Add Alert"
             className="p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
           >
             <Bell

@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Serif_Text } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import ServiceWorkerRegister from "@/components/serviceWorker/serviceWorkerRegister";
 const dmSerifText = DM_Serif_Text({
   weight: ["400"],
   style: ["normal", "italic"],
@@ -11,6 +12,7 @@ const dmSerifText = DM_Serif_Text({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://trackfi.vercel.app"),
   title: {
     default: "Trackfi",
     template: "%s | Trackfi",
@@ -27,7 +29,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Akerele Raymond" }],
   openGraph: {
-    title: "Trackfi — Track Your Crypto Portfolio",
+    title: "Trackfi - Track Your Crypto Portfolio",
     description:
       "Real-time crypto and personal finance tracker. Monitor your portfolio, track prices, and manage your finances in one place.",
     url: "https://trackfi.vercel.app",
@@ -43,12 +45,17 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
-  // twitter: {
-  //   card: "summary_large_image",
-  //   title: "Trackfi | Premium Dining",
-  //   description: "Gourmet meals delivered fast.",
-  //   images: ["/og-image.jpg"],
-  // },
+  manifest: "/manifest.json",
+  twitter: {
+    card: "summary_large_image",
+    title: "Trackfi - Track Your Crypto Portfolio",
+    description: "Gourmet meals delivered fast.",
+    images: ["/logos/trackfi-preview.png"],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
 };
 export default function RootLayout({
   children,
@@ -58,6 +65,7 @@ export default function RootLayout({
   return (
     <html lang="en">
         <body className={`${dmSerifText.variable} ${dmSerifText.className}`}>
+          <ServiceWorkerRegister />
         {children}
         <Toaster
           position="top-right"

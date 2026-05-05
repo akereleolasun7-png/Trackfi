@@ -4,16 +4,16 @@ import { Bell, Plus, Zap, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertConfigPanel } from "./alertConfigPanel";
 import { SetAlertModal } from "@/components/shared/modals/setAlertModal";
-import { AlertCondition } from "@/types";
+import { AlertCondition, EnrichedAlert } from "@/types";
 import { createAlert } from "@/lib/api";
-import { useWatchlist } from "@/lib/query/watchlist";
 
 function AlertEmpty() {
-  const { data: watchlistCoins = [] } = useWatchlist();
-  const supportedCoins = watchlistCoins.map((coin) => ({
-    label: coin.symbol,
-    coin: coin.name,
-    symbol: coin.symbol,
+  const data: EnrichedAlert[] = [] 
+  const supportedCoins = data.map((coin) => ({
+    ...coin,
+    label: coin.coin_symbol,
+    coin: coin.coin_name,
+    symbol: coin.coin_symbol,
     current_price: coin.current_price ?? 0,
   }));
 
@@ -152,7 +152,7 @@ function AlertEmpty() {
           <AlertConfigPanel
             coins={supportedCoins}
             selectedCoin={selectedCoin}
-            onCoinSelect={setSelectedCoin}
+            onCoinSelect={(coin) => setSelectedCoin(coin as typeof supportedCoins[0])}
             condition={condition}
             onConditionChange={setCondition}
             targetPrice={targetPrice}
@@ -169,6 +169,7 @@ function AlertEmpty() {
       {showModal && selectedCoin && (
         <SetAlertModal
           coinSymbol={selectedCoin.symbol}
+           coinPrice={selectedCoin.current_price ?? 0}
           onClose={() => setShowModal(false)}
           onCreate={handleCreate}
         />

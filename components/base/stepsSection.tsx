@@ -60,7 +60,7 @@ export function StepsSection() {
                 <div className="hidden md:block absolute top-6 left-[60%] right-0 h-px bg-gradient-to-r from-orange-500/30 to-transparent" />
               )}
               <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 hover:border-orange-500/20 transition-all duration-300">
-                <span className="text-5xl font-black text-orange-500/20 block mb-4">
+                <span className="text-5xl font-black text-white/60 block mb-4">
                   {step.number}
                 </span>
                 <h3 className="text-white font-bold text-xl mb-3">

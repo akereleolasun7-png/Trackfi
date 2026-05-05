@@ -40,7 +40,7 @@ export const features = [
     title: "Live Data Stream",
     description:
       "Access live price streams, realtime market ticks, and up-to-the-second financial data across hundreds of assets.",
-    image: "/images/image-2.png",
+    image: "/images/markets.png",
     span: "col-span-1 md:col-span-2",
   },
   {

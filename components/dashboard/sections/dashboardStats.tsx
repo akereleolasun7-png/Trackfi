@@ -6,7 +6,7 @@ import { PortfolioStats } from "@/types/dashboard";
 import { formatCurrency } from "@/lib/helpers/formatPrice";
 function DashboardStats({ isEmpty, stats }: PortfolioStats) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 ">
       <StatCard
         label="Total Portfolio"
         value={

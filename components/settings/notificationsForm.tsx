@@ -130,7 +130,7 @@ export function NotificationsForm({ notifications }: NotificationsFormProps) {
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-black font-bold py-3 rounded-lg"
+          className="flex-1 h-12 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-black font-bold py-3 rounded-lg"
         >
           {isSaving ? "Saving..." : saveSuccess ? "Saved!" : "Save Changes"}
         </Button>

@@ -7,13 +7,13 @@ import {
   Smartphone,
   Mail,
   Lightbulb,
+  ChevronDown,
 } from "lucide-react";
-
-interface Coin {
+import { EnrichedAlert } from "@/types/alerts";
+import Image from "next/image";
+interface Coin extends EnrichedAlert {
   label: string;
   coin: string;
-  symbol: string;
-  current_price: number;
 }
 
 interface AlertConfigPanelProps {
@@ -31,6 +31,7 @@ interface AlertConfigPanelProps {
   isEmpty?: boolean;
   onSave?: () => void;
   editingTitle?: string;
+  isSaving?: boolean;
 }
 
 // Build price map from coins data (dynamic, not hardcoded)
@@ -48,6 +49,7 @@ export function AlertConfigPanel({
   onEmailChange,
   isEmpty,
   onSave,
+  isSaving,
   editingTitle,
 }: AlertConfigPanelProps) {
   if (!selectedCoin) return null;
@@ -55,13 +57,13 @@ export function AlertConfigPanel({
   // Build dynamic price map from coins data
   const currentPrices = coins.reduce(
     (acc, coin) => {
-      acc[coin.symbol] = coin.current_price;
+      acc[coin.coin_symbol] = coin.current_price ?? 0;
       return acc;
     },
     {} as Record<string, number>,
   );
 
-  const currentPrice = currentPrices[selectedCoin.symbol];
+  const currentPrice = currentPrices[selectedCoin.coin_symbol];
 
   return (
     <div className="w-full lg:w-[340px] shrink-0 bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-5">
@@ -70,9 +72,6 @@ export function AlertConfigPanel({
         <p className="text-xs text-white/40 uppercase tracking-widest mb-1">
           {editingTitle ? "Edit Alert Details" : "Configuration"}
         </p>
-        {editingTitle && (
-          <p className="text-sm text-white/60">{editingTitle}</p>
-        )}
       </div>
 
       {/* Select Asset */}
@@ -94,10 +93,10 @@ export function AlertConfigPanel({
             <div className="flex flex-wrap gap-2">
               {coins.map((c) => (
                 <button
-                  key={c.symbol}
+                  key={c.coin_symbol}
                   onClick={() => onCoinSelect(c)}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                    selectedCoin.symbol === c.symbol
+                    selectedCoin.coin_symbol === c.coin_symbol
                       ? "bg-primary text-black"
                       : "bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10"
                   }`}
@@ -109,21 +108,26 @@ export function AlertConfigPanel({
           </>
         ) : (
           <select
-            value={selectedCoin.symbol}
+            value={selectedCoin.coin_symbol}
             onChange={(e) =>
               onCoinSelect(
-                coins.find((c) => c.symbol === e.target.value) ?? coins[0],
+                coins.find((c) => c.coin_symbol === e.target.value) ?? coins[0],
               )
             }
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 appearance-none cursor-pointer"
           >
             {coins.map((c) => (
-              <option key={c.symbol} value={c.symbol} className="bg-[#111]">
-                {c.coin} ({c.symbol})
+              <option
+                key={c.id}
+                value={c.coin_symbol}
+                className="bg-[#111]"
+              >
+                {c.coin_name} ({c.coin_symbol})
               </option>
             ))}
           </select>
         )}
+         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
       </div>
 
       {/* Condition */}
@@ -143,8 +147,8 @@ export function AlertConfigPanel({
               }`}
             >
               {isEmpty
-                ? `Price ${opt.charAt(0).toUpperCase() + opt.slice(1)}`
-                : opt.charAt(0).toUpperCase() + opt.slice(1)}
+                ? `Price ${opt?.charAt(0).toUpperCase() + opt.slice(1)}`
+                : opt?.charAt(0).toUpperCase() + opt.slice(1)}
             </button>
           ))}
         </div>
@@ -167,8 +171,8 @@ export function AlertConfigPanel({
         </div>
         {currentPrice && (
           <p className="text-[11px] text-white/30 mt-1.5 text-right">
-            Current {selectedCoin.symbol} Price: $
-            {currentPrice.toLocaleString()}
+            Current {selectedCoin.coin_symbol} Price: $
+            {currentPrice?.toLocaleString()}
           </p>
         )}
       </div>
@@ -269,22 +273,29 @@ export function AlertConfigPanel({
           <p className="text-[11px] text-white/20 leading-relaxed">
             This alert will remain active until manually disabled or deleted.
           </p>
+          
           <button
             onClick={onSave}
-            className="w-full bg-primary hover:bg-primary/90 text-black font-bold py-3.5 rounded-2xl transition-colors cursor-pointer"
+            disabled={isSaving}
+            className={`w-full bg-primary hover:bg-primary/90 text-black font-bold py-3.5 rounded-2xl transition-colors cursor-pointer ${
+              isSaving ? "opacity-60 cursor-not-allowed" : ""
+            }`}
           >
-            Save Changes
+            {isSaving ? (
+              <span className="flex items-center justify-center gap-2">
+                <Image
+                  src="/logos/Spinner.svg"
+                  alt="loading"
+                  width="20"
+                  height="20"
+                />
+                Saving...
+              </span>
+            ) : (
+              "Save Changes"
+            )}
           </button>
         </>
-      )}
-
-      {isEmpty && (
-        <button
-          onClick={onSave}
-          className="w-full bg-primary hover:bg-primary/90 text-black font-bold py-3.5 rounded-2xl transition-colors cursor-pointer"
-        >
-          Save Alert
-        </button>
       )}
     </div>
   );

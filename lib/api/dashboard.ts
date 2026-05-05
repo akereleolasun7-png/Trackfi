@@ -6,61 +6,62 @@ import {
   SmartAlertItem,
 } from "@/types/index";
 
-// this  file is mock data
-import { mockStats } from "@/lib/mock/portfolio";
-import { mockDashboardPortfolio } from "@/lib/mock/dashoboardPorfolio";
-import { mockTransactions } from "@/lib/mock/transactions";
-import { mockAllocation } from "@/lib/mock/allocation";
-import { mockAlerts } from "../mock/alert";
-
 export const dashboardApi = {
-  
   async fetchPortfolioStats(): Promise<PortfolioStats["stats"]> {
-    // const res = await fetch('/api/portfolio/stats');
-    // if (!res.ok) throw new Error('Failed to fetch portfolio stats');
-    // return res.json();
-
-    // this is a placeholder for the actual API call to Supabase. In a real implementation, you would fetch from your backend API that queries Supabase for the user's portfolio stats.
-    return mockStats;
+    const res = await fetch("/api/dashboard/stats");
+    if (!res.ok) throw new Error("Failed to fetch portfolio stats");
+    return res.json();
   },
 
-  // Live market prices from CoinGecko (cached via Redis)
-  async fetchMarketPrices(): Promise<MarketCoinItem[]> {
-    // const res = await fetch('/api/market/prices');
-    // if (!res.ok) throw new Error('Failed to fetch market prices');
-    // return res.json();
-
-    // this is a placeholder for the actual API call to CoinGecko, which should be cached on the server side using Redis for performance. In a real implementation, you would fetch from your backend API that handles the caching logic.
-    return mockDashboardPortfolio;
+  async fetchWatchlistPrices(): Promise<MarketCoinItem[]> {
+    const res = await fetch("/api/watchlist?limit=5");
+    if (!res.ok) throw new Error("Failed to fetch market prices");
+    const data = await res.json();
+    return data.coins || [];
   },
 
-  // Recent transactions from Supabase
   async fetchRecentTransactions(): Promise<RecentTransactionItem[]> {
-    // const res = await fetch('/api/transactions/recent');
-    // if (!res.ok) throw new Error('Failed to fetch transactions');
-    // return res.json();
-
-    // this is a placeholder for the actual API call to Supabase. In a real implementation, you would fetch from your backend API that queries Supabase for the user's recent transactions.
-    return mockTransactions;
+    const res = await fetch("/api/transactions?limit=8");
+    if (!res.ok) throw new Error("Failed to fetch transactions");
+    const data = await res.json();
+    return data.transactions || [];
   },
-  // Active alerts count from Supabase
+
   async fetchActiveAlerts(): Promise<SmartAlertItem[]> {
-    // const res = await fetch('/api/alerts/count');
-    // if (!res.ok) throw new Error('Failed to fetch alerts');
-    // const data = await res.json();
-    // return data.count;
-
-    // this is a placeholder for the actual API call to Supabase. In a real implementation, you would fetch from your backend API that queries Supabase for the user's active alerts.
-    return mockAlerts;
+    const res = await fetch("/api/alerts?limit=2");
+    if (!res.ok) throw new Error("Failed to fetch alerts");
+    return res.json();
   },
 
-  // Asset allocation breakdown
   async fetchAssetAllocation(): Promise<AssetAllocationItem[]> {
-    // const res = await fetch('/api/portfolio/allocation');
-    // if (!res.ok) throw new Error('Failed to fetch allocation');
-    // return res.json();
+    const res = await fetch("/api/watchlist?limit=1000");
+    if (!res.ok) throw new Error("Failed to fetch allocation");
+    const data = await res.json();
+    const coins = data.coins || [];
 
-    // this is a placeholder for the actual API call to Supabase. In a real implementation, you would fetch from your backend API that queries Supabase for the user's asset allocation.
-    return mockAllocation;
+    // Transform coins to allocation format with percentages
+    const totalValue = coins.reduce(
+      (sum: number, c: MarketCoinItem)=> sum + (c.holdings || 0),
+      0,
+    );
+    const colors = [
+      "#ff9062",
+      "#a78bfa",
+      "#38bdf8",
+      "#34d399",
+      "#fbbf24",
+      "#f87171",
+      "#ec4899",
+      "#8b5cf6",
+    ];
+
+    return coins.map((coin: MarketCoinItem, idx: number) => ({
+      label: coin.symbol.toUpperCase(),
+      percent:
+        totalValue > 0
+          ? Number(((coin.holdings / totalValue) * 100).toFixed(1))
+          : 0,
+      color: colors[idx % colors.length],
+    }));
   },
 };

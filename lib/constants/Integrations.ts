@@ -2,30 +2,30 @@ import { Integration } from "@/types/settings";
 
 export const defaultIntegrations: Integration[] = [
   {
-    id: "int_001",
-    provider: "metamask",
-    name: "MetaMask",
-    status: "disconnected",
-    description: "Connect your MetaMask wallet to sync on-chain transactions",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg",
-    walletAddress:null,
-  },
-  {
-    id: "int_002",
-    provider: "trustwallet",
-    name: "Trust Wallet",
-    status: "disconnected",
-    description: "Connect your Trust Wallet to import transactions",
-      icon: "https://assets.coingecko.com/coins/images/11085/small/Trust.png",
-    walletAddress: null,
-  },
-  {
-    id: "int_003",
-    provider: "binance",
-    name: "Binance",
-    status: "coming_soon", // ← flag it as coming soon
-    description: "Connect your Binance account to sync trades",
-    icon: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png",
-    walletAddress:null,
-  },
+  id: "int_001",
+  provider: "ethereum",  // lowercase to match CHAINS map in worker
+  name: "Ethereum",
+  status: "disconnected",
+  description: "Connect your Ethereum address to sync on-chain transactions",
+  icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+  walletAddress: null,
+},
+{
+  id: "int_002",
+  provider: "bitcoin",
+  name: "Bitcoin",
+  status: "coming_soon",
+  description: "Connect your Bitcoin address to import transactions",
+  icon: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  walletAddress: null,
+},
+{
+  id: "int_003",
+  provider: "solana",
+  name: "Solana",
+  status: "coming_soon",
+  description: "Connect your Solana wallet to sync transactions",
+  icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+  walletAddress: null,
+},
 ];

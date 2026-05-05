@@ -5,7 +5,7 @@ import { DashboardSkeleton } from "../common/skeleton";
 import { toast } from "sonner";
 import {
   usePortfolioStats,
-  useMarketPrices,
+  useWatchlistPrices,
   useRecentTransactions,
   useAssetAllocation,
   useSmartAlerts,
@@ -16,13 +16,14 @@ import MarketWatchlist from "./sections/marketWatchlist";
 import AssetAllocation from "./sections/assetAllocation";
 import RecentTransactions from "./sections/recentTransactions";
 import SmartAlerts from "./sections/smartAlert";
+import PushNotification from "./sections/pushNotification";
 export default function DashboardPage() {
   const {
     data: stats,
     isLoading: statsLoading,
     isError: statsError,
   } = usePortfolioStats();
-  const { data: market = [], isLoading: marketLoading } = useMarketPrices();
+  const { data: market = [], isLoading: marketLoading } = useWatchlistPrices();
   const { data: transactions = [] } = useRecentTransactions();
   const { data: allocation = [] } = useAssetAllocation();
   const {data: alerts = []} = useSmartAlerts();
@@ -37,6 +38,7 @@ export default function DashboardPage() {
   if (loading) return <DashboardSkeleton />;
   return (
     <div className="pt-24 px-6 pb-10 min-h-screen text-white">
+      <PushNotification/>
       <DashboardStats isEmpty={isEmpty} stats={stats} />
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

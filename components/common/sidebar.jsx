@@ -127,7 +127,7 @@ export function AppSidebar({ user }) {
                 <p className="text-sm text-white font-medium leading-none">
                   {shortDisplayName?.toUpperCase() || user?.email.split("@")[0].toUpperCase()}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">{user.package_type.charAt(0).toUpperCase() + user.package_type.slice(1)} Plan</p>
+                <p className="text-xs text-gray-500 mt-0.5">{user.package_type?.charAt(0).toUpperCase() + user.package_type.slice(1)} Plan</p>
               </div>
             )}
           </div>

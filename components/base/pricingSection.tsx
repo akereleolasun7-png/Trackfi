@@ -37,7 +37,7 @@ export function PricingSection() {
   }, []);
 
   return (
-    <section className="bg-[#0a0a0a] py-24 px-6">
+    <section id="pricing" className="bg-[#0a0a0a] py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <p className="text-white/30 text-xs uppercase tracking-widest mb-3">
@@ -72,22 +72,12 @@ export function PricingSection() {
                 </div>
               )}
 
-              <div className="mb-6">
-                <p className="text-white/40 text-sm mb-1">{plan.name}</p>
-                <div className="flex items-end gap-1">
-                  <span className="text-4xl font-black text-white">
-                    {plan.price}
-                  </span>
-                  {plan.period && (
-                    <span className="text-white/40 text-sm mb-1">
-                      {plan.period}
-                    </span>
-                  )}
-                </div>
-                <p className="text-white/30 text-xs mt-1">{plan.description}</p>
+              <div className="mb-4">
+                <p className="text-white/40 mb-3 text-2xl">{plan.name}</p>
+                <p className="text-white/30 text-xs">{plan.description}</p>
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 mb-8 flex-1">
                 {plan.features.map((f) => (
                   <li
                     key={f}
@@ -100,9 +90,22 @@ export function PricingSection() {
                   </li>
                 ))}
               </ul>
+
+              <div className="mb-6">
+                <div className="flex items-end gap-1">
+                  <span className="text-4xl font-black text-white">
+                    {plan.price}
+                  </span>
+                  {plan.period && (
+                    <span className="text-white/40 text-sm mb-1">
+                      {plan.period}
+                    </span>
+                  )}
+                </div>
+              </div>
               <Link href={plan.link}>
                 <button
-                  className={`mt-auto w-full py-3 rounded-xl text-sm font-bold transition-colors cursor-pointer ${
+                  className={`flex-1 mt-auto w-full py-3 rounded-xl text-sm font-bold transition-colors cursor-pointer ${
                     plan.highlight
                       ? "bg-orange-500 hover:bg-orange-400 text-black"
                       : "border border-white/10 text-white/60 hover:text-white hover:border-white/20"

@@ -7,11 +7,11 @@ export function CTASection() {
   const contentRef = useGsapFadeUp();
 
   return (
-    <section className="bg-[#0a0a0a] py-16 px-6">
+    <section className=" py-16 px-6">
       <div className="max-w-7xl mx-auto">
         <div
           ref={contentRef}
-          className="relative bg-orange-500/80 rounded-3xl px-8 py-16 text-center overflow-hidden"
+          className="relative bg-zinc-900 rounded-3xl px-8 py-16 text-center overflow-hidden"
         >
           {/* Background texture */}
           <div className="absolute inset-0 opacity-10">
@@ -20,10 +20,10 @@ export function CTASection() {
           </div>
 
           <div className="relative z-10">
-            <h2 className="text-3xl md:text-5xl font-black text-black leading-tight mb-4">
+            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4">
               Start tracking your crypto today.
             </h2>
-            <p className="text-black/60 text-base mb-8 max-w-md mx-auto">
+            <p className="text-white text-base mb-8 max-w-md mx-auto">
               Join thousands of investors who trust Track8 to monitor their
               portfolio 24/7.
             </p>

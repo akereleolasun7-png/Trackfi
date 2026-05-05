@@ -1,0 +1,21 @@
+{
+  "name": "Trackfi",
+  "short_name": "Trackfi",
+  "description": "Real-time crypto portfolio tracker",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
+  "icons": [
+    {
+      "src": "/logos/icon-2.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logos/icon-1.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
