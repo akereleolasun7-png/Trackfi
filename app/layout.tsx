@@ -12,7 +12,7 @@ const dmSerifText = DM_Serif_Text({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://trackfi.vercel.app"),
+  metadataBase: new URL("https://trackfi-umber.vercel.app/"),
   title: {
     default: "Trackfi",
     template: "%s | Trackfi",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "Trackfi - Track Your Crypto Portfolio",
     description:
       "Real-time crypto and personal finance tracker. Monitor your portfolio, track prices, and manage your finances in one place.",
-    url: "https://trackfi.vercel.app",
+    url: "https://trackfi-umber.vercel.app/",
     siteName: "Trackfi",
     images: [
       {
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Trackfi - Track Your Crypto Portfolio",
     description: "Gourmet meals delivered fast.",
-    images: ["/logos/trackfi-preview.png"],
+    images: ["/images/trackfi-preview.png"],
   },
 };
 
