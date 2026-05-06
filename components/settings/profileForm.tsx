@@ -5,13 +5,18 @@ import { UserProfile } from "@/types/settings";
 import { CurrencyPreference } from "@/types/settings";
 import { Button } from "@/components/ui/button";
 import { updateProfile } from "@/lib/api/settings";
-import { User, CheckCircle } from "lucide-react";
-
+import { User, CheckCircle, Camera } from "lucide-react";
+import {toast} from 'sonner'
+import Image from "next/image";
 interface ProfileFormProps {
   profile: UserProfile;
 }
 
 export function ProfileForm({ profile }: ProfileFormProps) {
+  const [image, setImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   const [formData, setFormData] = useState<{
     firstName: string;
     lastName: string;
@@ -52,13 +57,121 @@ export function ProfileForm({ profile }: ProfileFormProps) {
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
   };
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select a valid image file');
+        return;
+      }
+
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleUploadImage = async () => {
+    if (!image || !image.startsWith('data:image')) {
+      toast.error('Please select an image first');
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      const response = await fetch('/api/users/profile/image', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ image }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success('Profile picture updated successfully!');
+        setImageFile(null);
+        if (result.data?.image) {
+          setImage(result.data.image);
+        }
+      } else {
+        toast.error('Failed to upload image: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Error uploading image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
       {/* Profile Picture */}
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
         <h3 className="text-lg font-semibold mb-4">Profile Picture</h3>
-        <div className="flex items-center gap-6">
+         {/* Avatar Section */}
+            <div className="flex flex-col items-center gap-3 w-full sm:w-auto">
+              <div className="relative w-20 h-20 sm:w-16 sm:h-16 group">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                  id="avatar-upload"
+                />
+                <label htmlFor="avatar-upload" className="cursor-pointer">
+                  <div className="w-full h-full bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-200 group-hover:border-green-500 transition-colors">
+                    {image ? (
+                      <Image
+                        src={image}
+                        alt="Profile"
+                        className="object-cover w-full h-full"
+                        width={160}
+                        height={160}
+                      />
+                    ) : (
+                      <span className="text-gray-600 font-semibold text-lg">
+                        {formData.firstName.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 bg-green-600 rounded-full p-1.5 group-hover:bg-green-700 transition-colors">
+                    <Camera className="w-3 h-3 text-white" />
+                  </div>
+                </label>
+              </div>
+              
+              {imageFile && (
+                <button
+                  onClick={handleUploadImage}
+                  disabled={uploadingImage}
+                  className="text-xs bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto"
+                >
+                  {uploadingImage ? (
+                    <span className="flex items-center justify-center gap-1">
+                      <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Uploading...
+                    </span>
+                  ) : (
+                    'Upload Image'
+                  )}
+                </button>
+              )}
+            </div>
+        {/* <div className="flex items-center gap-6">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
             <User className="w-10 h-10 text-white" />
           </div>
@@ -75,7 +188,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               </Button>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Public Profile */}

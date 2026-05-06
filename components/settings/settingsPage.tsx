@@ -12,19 +12,25 @@ import { SecurityForm } from "./securityForm";
 import { User, Bell, Shield, Link2 } from "lucide-react";
 import IntegrationsPage from "./integrationsPage";
 import { SettingsSkeleton } from "@/components/common/skeleton";
+
+type SettingsTab = "profile" | "notifications" | "security" | "integrations";
+
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
 
-  const { data: profile } = useProfile();
-  const { data: notifications } = useNotificationSettings();
-  const { data: security } = useSecuritySettings();
-  const { data: integrations } = useIntegrations();
+  const { data: profile, isLoading: profileLoading } = useProfile();
+  const { data: notifications, isLoading: notificationsLoading } = useNotificationSettings();
+  const { data: security, isLoading: securityLoading } = useSecuritySettings();
+  const { data: integrations, isLoading: integrationsLoading } = useIntegrations();
 
-  const isLoading = !profile || !notifications || !security || !integrations;
+    const isLoading =
+    (activeTab === "profile" && profileLoading) ||
+    (activeTab === "notifications" && notificationsLoading) ||
+    (activeTab === "security" && securityLoading) ||
+    (activeTab === "integrations" && integrationsLoading);
 
-  if (isLoading) {
-    return <SettingsSkeleton />;
-  }
+  
+  if (isLoading) return <SettingsSkeleton />;
 
   return (
     <div className="pt-24 px-6 pb-10 min-h-screen text-white">
@@ -41,10 +47,10 @@ export default function SettingsPage() {
         <div className="fixed  lg:bg-none bottom-0 left-0 right-0 z-40 lg:static lg:w-64 lg:bottom-auto lg:left-auto lg:right-auto lg:z-auto">
           <div className="grid grid-cols-4 lg:grid-cols-1 backdrop-blur-md shadow-sm bg-white/5 border border-white/10 rounded-t-2xl lg:rounded-2xl p-4 lg:sticky lg:top-24 gap-1 border-b lg:border-b">
             {[
-              { id: "profile", label: "Profile", icon: User },
-              { id: "notifications", label: "Notifications", icon: Bell },
-              { id: "security", label: "Security", icon: Shield },
-              { id: "integrations", label: "Integrations", icon: Link2 },
+              { id: "profile" as const, label: "Profile", icon: User },
+              { id: "notifications" as const, label: "Notifications", icon: Bell },
+              { id: "security" as const, label: "Security", icon: Shield },
+              { id: "integrations" as const, label: "Integrations", icon: Link2 },
             ].map((item) => {
               const Icon = item.icon;
               return (
@@ -64,7 +70,7 @@ export default function SettingsPage() {
             })}
           </div>
         </div>
-
+          
         {/* Main Content */}
         <div className="flex-1 pb-24 lg:pb-0">
           {activeTab === "profile" && profile && (

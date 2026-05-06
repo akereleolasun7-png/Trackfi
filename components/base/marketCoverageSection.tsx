@@ -3,11 +3,7 @@ import React from "react";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import { bullets, marketCoverage } from "@/lib/constants/landing";
-import { useGsapFadeLeft, useGsapFadeDown ,  useGsapFadeRight } from "@/hooks/useGsapAnimation";
-
 export function MarketCoverageSection() {
-  // const imageRef = useGsapFadeDown();
-  // const textRef = useGsapFadeRight();
 
   return (
     <section className="bg-[#0a0a0a] py-24 px-6">

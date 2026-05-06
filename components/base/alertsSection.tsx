@@ -3,7 +3,6 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { alerts } from "@/lib/constants/landing";
-import { useGsapFadeLeft, useGsapFadeRight } from "@/hooks/useGsapAnimation";
 import Link from 'next/link'
 export function AlertsSection() {
 

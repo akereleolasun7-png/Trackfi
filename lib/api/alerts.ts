@@ -1,11 +1,10 @@
-import { mockAlertStats } from '@/lib/mock/alerts'
-import { EnrichedAlert, AlertStats } from '@/types/alerts'
+import { EnrichedAlert } from '@/types/alerts'
 import { CreateAlertInput, UpdateAlertInput } from '@/types/alerts'
 import { toast } from 'sonner'
 export async function fetchAlerts(): Promise<EnrichedAlert[]> {
   const res = await fetch('/api/alerts')
   if (!res.ok) throw new Error('Failed to fetch alerts')
-  return res.json()  
+  return res.json();  
 }
 
 export async function createAlert(data: CreateAlertInput) {

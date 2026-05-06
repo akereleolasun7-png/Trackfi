@@ -53,7 +53,7 @@ export async function GET(req: Request) {
 
     if (!alerts?.length) return NextResponse.json([]);
 
-    const CACHE_KEY = `alerts:coins:${user.id}`;
+    const CACHE_KEY = `alert:coins:${user.id}`;
 
     let cached = null;
     try {
