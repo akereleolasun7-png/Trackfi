@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { Integration, IntegrationProvider } from "@/types/settings";
+import { IntegrationProvider } from "@/types/settings";
 import { transactionQueue } from "@/lib/queues/transactionsQueue";
 import { redis } from "@/lib/redis";
 export async function POST(request: NextRequest) {

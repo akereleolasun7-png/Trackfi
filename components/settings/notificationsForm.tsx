@@ -1,36 +1,91 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NotificationSettings } from "@/types/settings";
-import { Button } from "@/components/ui/button";
-import { updateNotificationSettings } from "@/lib/api/settings";
-import { Bell, Mail, MessageSquare } from "lucide-react";
+import {
+  updateNotificationSettings,
+  updatePushNotificationSettings,
+  subscribeToPushNotifications,
+} from "@/lib/api/settings";
+import { Bell, Mail } from "lucide-react";
+import { toast } from "sonner";
 
 interface NotificationsFormProps {
   notifications: NotificationSettings;
 }
 
 export function NotificationsForm({ notifications }: NotificationsFormProps) {
-  const [formData, setFormData] = useState({
-    emailNotifications: notifications.emailNotifications,
-    priceAlerts: notifications.priceAlerts,
-    portfolioUpdates: notifications.portfolioUpdates,
-    weeklyReport: notifications.weeklyReport,
-    pushNotifications: notifications.pushNotifications,
-  });
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [emailNotifications, setEmailNotifications] = useState(
+    notifications.emailNotifications,
+  );
+  const [weeklyReport, setWeeklyReport] = useState(notifications.weeklyReport);
+  const [pushNotifications, setPushNotifications] = useState(
+    notifications.pushNotifications,
+  );
 
-  const handleToggle = (key: keyof typeof formData) => {
-    setFormData((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+  useEffect(() => {
+    const checkCurrentBrowser = async () => {
+      if (!("serviceWorker" in navigator)) {
+        setPushNotifications(false);
+        return;
+      }
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      setPushNotifications(!!subscription);
+    };
+    checkCurrentBrowser();
+  }, []);
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    await updateNotificationSettings(formData);
-    setIsSaving(false);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+  const handleToggle = async (key: string) => {
+    if (key === "emailNotifications") {
+      const newValue = !emailNotifications;
+      setEmailNotifications(newValue);
+      try {
+        await updateNotificationSettings({ emailNotifications: newValue });
+      } catch {
+        setEmailNotifications(!newValue);
+        toast.error("Failed to update");
+      }
+    } else if (key === "weeklyReport") {
+      const newValue = !weeklyReport;
+      setWeeklyReport(newValue);
+      try {
+        await updateNotificationSettings({ weeklyReport: newValue });
+      } catch {
+        setWeeklyReport(!newValue);
+        toast.error("Failed to update");
+      }
+    } else if (key === "pushNotifications") {
+      const newValue = !pushNotifications;
+      setPushNotifications(newValue);
+      try {
+        if (newValue) {
+          const permission = await Notification.requestPermission();
+          if (permission !== "granted") {
+            toast.error("Permission denied");
+            setPushNotifications(false);
+            return;
+          }
+          const registration = await navigator.serviceWorker.ready;
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+          });
+          await subscribeToPushNotifications(subscription);
+        } else {
+          const registration = await navigator.serviceWorker.ready;
+          const subscription = await registration.pushManager.getSubscription();
+          if (!subscription) return;
+          await subscription.unsubscribe();
+          await updatePushNotificationSettings({
+            endpoint: subscription.endpoint,
+            is_active: false,
+          });
+        }
+      } catch {
+        setPushNotifications(!newValue);
+        toast.error("Failed to update push notifications");
+      }
+    }
   };
 
   const notificationOptions = [
@@ -39,18 +94,6 @@ export function NotificationsForm({ notifications }: NotificationsFormProps) {
       title: "Email Notifications",
       description: "Receive general notifications via email",
       icon: Mail,
-    },
-    {
-      key: "priceAlerts",
-      title: "Price Alerts",
-      description: "Get notified when your alert triggers",
-      icon: Bell,
-    },
-    {
-      key: "portfolioUpdates",
-      title: "Portfolio Updates",
-      description: "Daily summary of your portfolio changes",
-      icon: MessageSquare,
     },
     {
       key: "weeklyReport",
@@ -77,7 +120,12 @@ export function NotificationsForm({ notifications }: NotificationsFormProps) {
       <div className="space-y-4 mb-8">
         {notificationOptions.map((option) => {
           const Icon = option.icon;
-          const value = formData[option.key as keyof typeof formData];
+          const value =
+            option.key === "emailNotifications"
+              ? emailNotifications
+              : option.key === "weeklyReport"
+                ? weeklyReport
+                : pushNotifications;
           return (
             <div
               key={option.key}
@@ -95,9 +143,7 @@ export function NotificationsForm({ notifications }: NotificationsFormProps) {
                 </div>
               </div>
               <button
-                onClick={() =>
-                  handleToggle(option.key as keyof typeof formData)
-                }
+                onClick={() => handleToggle(option.key)}
                 className={`w-10 h-6 rounded-full transition-colors flex items-center px-1 shrink-0 ml-4 ${
                   value ? "bg-orange-500" : "bg-white/20"
                 }`}
@@ -113,27 +159,12 @@ export function NotificationsForm({ notifications }: NotificationsFormProps) {
         })}
       </div>
 
-      {/* Delivery Methods Info */}
-      <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-6">
+      <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
         <p className="text-xs text-white/60">
           <strong>Note:</strong> Notifications are delivered via your selected
           channels. Configure specific delivery methods in your notification
           settings.
         </p>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex gap-3 pt-6 border-t border-white/10">
-        <button className="flex-1 px-4 py-3 rounded-lg border border-white/20 text-white hover:bg-white/5 transition-colors font-semibold">
-          Reset to Defaults
-        </button>
-        <Button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="flex-1 h-12 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-black font-bold py-3 rounded-lg"
-        >
-          {isSaving ? "Saving..." : saveSuccess ? "Saved!" : "Save Changes"}
-        </Button>
       </div>
     </div>
   );

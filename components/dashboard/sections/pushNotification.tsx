@@ -1,21 +1,21 @@
 "use client";
 import React, { useState, useEffect } from "react";
-
+import {subscribeToPushNotifications} from "@/lib/api/settings";
 function PushNotification() {
   const [loading, setLoading] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  //   useEffect(() => {
-  //   const check = async () => {
-  //     if ('serviceWorker' in navigator) {
-  //       const registration = await navigator.serviceWorker.ready
-  //       const existing = await registration.pushManager.getSubscription()
-  //       if (existing) setDismissed(true)
-  //     }
-  //     setDismissed(true)
-  //   }
-  //   check()
-  // }, [])
+    useEffect(() => {
+    const check = async () => {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready
+        const existing = await registration.pushManager.getSubscription()
+        if (existing) setDismissed(true)
+      }
+      setDismissed(true)
+    }
+    check()
+  }, [])
 
   const requestPermission = async () => {
     setLoading(true);
@@ -28,13 +28,9 @@ function PushNotification() {
           userVisibleOnly: true,
           applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
         });
-
-        const res = await fetch("/api/user/push", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ subscription }),
-        });
-        if (res.ok) {
+       const res = await subscribeToPushNotifications(subscription);
+        
+        if (res.success) {
           setDismissed(true);
           new Notification("Trackfi", { body: "Notifications enabled!" });
           

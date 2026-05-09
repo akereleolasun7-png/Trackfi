@@ -11,27 +11,39 @@ import { NotificationsForm } from "./notificationsForm";
 import { SecurityForm } from "./securityForm";
 import { User, Bell, Shield, Link2 } from "lucide-react";
 import IntegrationsPage from "./integrationsPage";
-import { SettingsSkeleton } from "@/components/common/skeleton";
+import { SettingsContentSkeleton } from "@/components/common/skeleton";
 
 type SettingsTab = "profile" | "notifications" | "security" | "integrations";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
 
-  const { data: profile, isLoading: profileLoading } = useProfile();
-  const { data: notifications, isLoading: notificationsLoading } = useNotificationSettings();
-  const { data: security, isLoading: securityLoading } = useSecuritySettings();
-  const { data: integrations, isLoading: integrationsLoading } = useIntegrations();
-
-    const isLoading =
+  const { data: profile, isLoading: profileLoading } = useProfile({
+    enabled: activeTab === "profile",
+  });
+  const { data: notifications, isLoading: notificationsLoading } =
+    useNotificationSettings({
+      enabled: activeTab === "notifications",
+    });
+  const { data: security, isLoading: securityLoading } = useSecuritySettings({
+    enabled: activeTab === "security",
+  });
+  const { data: integrations, isLoading: integrationsLoading } =
+    useIntegrations({
+      enabled: activeTab === "integrations",
+    });
+  const isLoading =
     (activeTab === "profile" && profileLoading) ||
     (activeTab === "notifications" && notificationsLoading) ||
     (activeTab === "security" && securityLoading) ||
     (activeTab === "integrations" && integrationsLoading);
 
-  
-  if (isLoading) return <SettingsSkeleton />;
-
+    const tabs = [
+    { id: "profile" as const, label: "Profile", icon: User },
+    { id: "notifications" as const, label: "Notifications", icon: Bell },
+    { id: "security" as const, label: "Security", icon: Shield },
+    { id: "integrations" as const, label: "Integrations", icon: Link2 },
+  ];
   return (
     <div className="pt-24 px-6 pb-10 min-h-screen text-white">
       {/* Header */}
@@ -46,12 +58,7 @@ export default function SettingsPage() {
         {/* Sidebar Navigation */}
         <div className="fixed  lg:bg-none bottom-0 left-0 right-0 z-40 lg:static lg:w-64 lg:bottom-auto lg:left-auto lg:right-auto lg:z-auto">
           <div className="grid grid-cols-4 lg:grid-cols-1 backdrop-blur-md shadow-sm bg-white/5 border border-white/10 rounded-t-2xl lg:rounded-2xl p-4 lg:sticky lg:top-24 gap-1 border-b lg:border-b">
-            {[
-              { id: "profile" as const, label: "Profile", icon: User },
-              { id: "notifications" as const, label: "Notifications", icon: Bell },
-              { id: "security" as const, label: "Security", icon: Shield },
-              { id: "integrations" as const, label: "Integrations", icon: Link2 },
-            ].map((item) => {
+            {tabs.map((item) => {
               const Icon = item.icon;
               return (
                 <button
@@ -70,19 +77,19 @@ export default function SettingsPage() {
             })}
           </div>
         </div>
-          
+
         {/* Main Content */}
         <div className="flex-1 pb-24 lg:pb-0">
-          {activeTab === "profile" && profile && (
-            <ProfileForm profile={profile} />
+           {isLoading ? (
+            <SettingsContentSkeleton />
+          ) : (
+            <>
+              {activeTab === "profile" && profile && <ProfileForm profile={profile} />}
+              {activeTab === "notifications" && notifications && <NotificationsForm notifications={notifications} />}
+              {activeTab === "security" && security && <SecurityForm security={security} />}
+              {activeTab === "integrations" && <IntegrationsPage />}
+            </>
           )}
-          {activeTab === "notifications" && notifications && (
-            <NotificationsForm notifications={notifications} />
-          )}
-          {activeTab === "security" && security && (
-            <SecurityForm security={security} />
-          )}
-          {activeTab === "integrations" && integrations && <IntegrationsPage />}
         </div>
       </div>
     </div>

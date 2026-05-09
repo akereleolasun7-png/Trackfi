@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React from "react";
 interface MediaDisplayProps {
   image_url?: string | null;
@@ -15,7 +14,7 @@ function MediaDisplay({ image_url, name, className }: MediaDisplayProps) {
   return (
     <div className={`relative overflow-hidden rounded-full ${className ?? "h-full w-full"}`}>
       {image_url ? (
-        <Image
+        <img
           src={optimizeCloudinaryUrl(image_url)}
           alt={name || "User"}
           className={`object-cover rounded-full ${className ?? ''}`}

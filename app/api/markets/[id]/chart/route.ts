@@ -63,6 +63,14 @@ export async function GET(
 
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("preferred_currency")
+    .eq("id", user.id)
+    .single();
+
+  const currency = (profile?.preferred_currency ?? "USD").toLowerCase();
+
   const range = (req.nextUrl.searchParams.get("range") ??
     "1M") as keyof typeof rangeMap;
   const beforeParam = req.nextUrl.searchParams.get("before");
@@ -72,19 +80,18 @@ export async function GET(
   const windowMs = rangeMap[range] * 24 * 60 * 60 * 1000;
   const fromTs = toTs - windowMs;
 
-  
   const fetchDays = paginationWindowMap[range];
 
   const res = await fetch(
-    `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${fetchDays}&precision=full`,
+    `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=${fetchDays}&precision=full`,
   );
 
   if (res.status === 429) {
     return Response.json({ error: "RATE_LIMITED" }, { status: 429 });
   }
   if (res.status === 401 || res.status === 403) {
-  return Response.json({ error: "PROVIDER_AUTH_ERROR" }, { status: 502 }); // your key issue, not user's
-}
+    return Response.json({ error: "PROVIDER_AUTH_ERROR" }, { status: 502 }); // your key issue, not user's
+  }
   if (!res.ok) {
     console.error(`CoinGecko error: ${res.status}`, await res.text());
     return Response.json(

@@ -22,7 +22,7 @@ export async function PUT(req: Request) {
     }
 
     const { image } = await req.json();
-
+    console.log("Received image data:", image ? "Yes" : "No");
     // Validate image
     if (!image || !image.startsWith("data:image")) {
       return NextResponse.json(
@@ -35,7 +35,7 @@ export async function PUT(req: Request) {
       const { data: currentUser } = await supabase
         .from("profiles")
         .select("*")
-        .eq("email", user.email)
+        .eq("id", user.id)
         .single();
 
       if (!currentUser) {
@@ -59,7 +59,7 @@ export async function PUT(req: Request) {
 
       // Upload new image to Cloudinary
       const uploadResult = await cloudinary.uploader.upload(image, {
-        folder: "BookHive/profiles",
+        folder: "Trackfi/profiles",
         transformation: [
           { width: 200, height: 200, crop: "fill", gravity: "face" },
           { quality: "auto" },
@@ -73,7 +73,7 @@ export async function PUT(req: Request) {
           image: uploadResult.secure_url,
           updated_at: new Date(),
         })
-        .eq("email", user.email)
+        .eq("id", user.id)
         .select()
         .single();
 
@@ -104,7 +104,6 @@ export async function PUT(req: Request) {
   } catch (err) {
     const error = err as Error;
     const isDbError =
-      error.message?.includes("MongoNetworkError") ||
       error.message?.includes("ENOTFOUND");
     console.error("Error updating image:", error);
     return NextResponse.json(

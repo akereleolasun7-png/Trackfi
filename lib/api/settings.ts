@@ -5,40 +5,76 @@ import {
   UpdateSecuritySettingsInput,
 } from "@/types/settings";
 
-export async function fetchSettings() {
-  // const res = await fetch('/api/settings')
-  // if (!res.ok) throw new Error('Failed to fetch settings')
-  // return res.json()
-  return mockSettings;
-}
-
 export async function fetchProfile() {
-  // const res = await fetch('/api/settings/profile')
-  // if (!res.ok) throw new Error('Failed to fetch profile')
-  // return res.json()
-  return mockSettings.profile;
+  const res = await fetch("/api/settings/profile");
+  if (!res.ok) throw new Error("Failed to fetch profile");
+  const data = await res.json();
+  return data;
 }
-
+export async function updateProfileImage(image: string) {
+  const res = await fetch("/api/settings/profile/image", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ image }),
+  });
+  return res;
+}
 export async function updateProfile(data: UpdateProfileInput) {
-  // TODO: wire to /api/settings/profile when backend is ready
-  console.warn("updateProfile: not implemented", data);
-  return mockSettings.profile;
+  const res = await fetch("/api/settings/profile/update", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to send profile data");
+  return res
 }
 
 export async function fetchNotificationSettings() {
-  // const res = await fetch('/api/settings/notifications')
-  // if (!res.ok) throw new Error('Failed to fetch notification settings')
-  // return res.json()
-  return mockSettings.notifications;
+  const res = await fetch("/api/settings/notifications");
+  if (!res.ok) throw new Error("Failed to fetch notification settings");
+  return res.json();
 }
 
 export async function updateNotificationSettings(
   data: UpdateNotificationSettingsInput,
 ) {
-  // TODO: wire to /api/settings/notifications when backend is ready
-  console.warn("updateNotificationSettings: not implemented", data);
-  return mockSettings.notifications;
+   const res = await fetch("/api/settings/notifications/update",{
+    headers: {
+      "Content-Type": "application/json"
+    },
+    method: "PATCH",
+    body: JSON.stringify(data),
+   });
+  if (!res.ok) throw new Error("Failed to update notification settings");
+  return res.json();
 }
+export async function subscribeToPushNotifications(subscription: PushSubscription) {
+  const res = await fetch("/api/user/push", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ subscription }),
+  });
+  if (!res.ok) throw new Error("Failed to subscribe to push notifications");
+  return res.json();
+}
+export async function updatePushNotificationSettings(
+    data: { endpoint: string; is_active: boolean }
+) {
+   const res = await fetch("/api/user/push/update",{
+    headers: {
+      "Content-Type": "application/json"
+    },
+    method: "PATCH",
+    body: JSON.stringify(data),
+   });
+  if (!res.ok) throw new Error("Failed to update notification settings");
+  return res.json();
+}
+
 
 export async function fetchSecuritySettings() {
   // const res = await fetch('/api/settings/security')

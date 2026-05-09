@@ -3,9 +3,15 @@
 import { createContext, useContext, ReactNode } from "react";
 import { User } from "@supabase/supabase-js";
 
+export type MergedUser = User & {
+  name?: string;
+  image?: string;
+  package_type?: string;
+  preferred_currency?: string;
+}
 
 type UserContextType = {
-  user: User;
+  user: MergedUser | null;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -13,11 +19,9 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({
   children,
   user,
-  
 }: {
   children: ReactNode;
-  user: User;
-  
+  user: MergedUser | null;
 }) {
   return (
     <UserContext.Provider value={{ user }}>

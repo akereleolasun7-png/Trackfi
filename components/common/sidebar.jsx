@@ -19,9 +19,10 @@ import { toast } from "sonner";
 import Image from "next/image";
 import MediaDisplay from "@/components/common/mediaDisplay";
 import { userItems } from "@/lib/constants/sidebar";
+import { useUser } from "@/context/UserContext";
 
-
-export function AppSidebar({ user }) {
+export function AppSidebar() {
+  const { user } = useUser();
   const { isOpen } = useSidebarStore();
   const { setOpen } = useSidebar();
   const isMobile = useIsMobile();
@@ -120,14 +121,14 @@ export function AppSidebar({ user }) {
         >
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 p-2">
-                  <MediaDisplay image_url={user.image} name={user?.name ||  user?.email.split("@")[0]} />
+                  <MediaDisplay image_url={user.image} name={user?.name ||  user?.email?.split("@")[0]} />
             </div>
             {showText && (
               <div>
                 <p className="text-sm text-white font-medium leading-none">
-                  {shortDisplayName?.toUpperCase() || user?.email.split("@")[0].toUpperCase()}
+                  {shortDisplayName?.toUpperCase() || user?.email?.split("@")[0].toUpperCase()}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">{user.package_type?.charAt(0).toUpperCase() + user.package_type.slice(1)} Plan</p>
+                <p className="text-xs text-gray-500 mt-0.5">{user.package_type?.charAt(0).toUpperCase() + user.package_type?.slice(1)} Plan</p>
               </div>
             )}
           </div>

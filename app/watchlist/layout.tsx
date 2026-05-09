@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { UserProvider } from "@/context/UserContext";
 import { Metadata } from "next";
 import { Providers } from "@/provider";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
@@ -37,31 +36,16 @@ export default async function AdminLayout({
     redirect("/login");
   }
 
-const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .maybeSingle()
-
   const NAVBAR_HEIGHT = 20;
-  const mergedUser = {
-  ...user,
-  name: profile?.name,
-  image: profile?.image,
-  package_type: profile?.package_type,
-}
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <AppSidebar user={mergedUser} />
+      <AppSidebar />
       <SidebarInset>
-        <NavbarDashboard pageTitle="Watchlist" />
-        <UserProvider user={mergedUser}>
+        <NavbarDashboard pageTitle="Watchlist"/>    
           <Providers>
               <div style={{ paddingTop: NAVBAR_HEIGHT }}>{children}</div>
           </Providers>
-
-        </UserProvider>
       </SidebarInset>
     </SidebarProvider>
   );

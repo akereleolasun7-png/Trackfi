@@ -3,6 +3,7 @@ import { DM_Serif_Text } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import ServiceWorkerRegister from "@/components/serviceWorker/serviceWorkerRegister";
+import { UserProviderWrapper } from "../context/userProviderWrapper";
 const dmSerifText = DM_Serif_Text({
   weight: ["400"],
   style: ["normal", "italic"],
@@ -66,7 +67,10 @@ export default function RootLayout({
     <html lang="en">
         <body className={`${dmSerifText.variable} ${dmSerifText.className}`}>
           <ServiceWorkerRegister />
-        {children}
+          <UserProviderWrapper>
+          {children}
+        </UserProviderWrapper>
+        
         <Toaster
           position="top-right"
           richColors

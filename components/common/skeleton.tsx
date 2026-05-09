@@ -146,44 +146,21 @@ export function MarketsSkeleton() {
   );
 }
 
-export function SettingsSkeleton() {
+export function SettingsContentSkeleton() {
   return (
-    <div className="pt-24 px-6 pb-10 min-h-screen text-white animate-pulse">
-      {/* Header */}
-      <div className="mb-8">
-        <Skeleton className="h-10 w-48 mb-2 bg-white/5 rounded-lg" />
-        <Skeleton className="h-4 w-96 bg-white/5 rounded-lg" />
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6 animate-pulse">
+      <Skeleton className="h-6 w-32 bg-white/5 rounded-lg" />
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i}>
+            <Skeleton className="h-3 w-24 mb-2 bg-white/5 rounded" />
+            <Skeleton className="h-10 w-full bg-white/5 rounded-lg" />
+          </div>
+        ))}
       </div>
-
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Sidebar Navigation */}
-        <div className="lg:w-64">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-11 w-full bg-white/5 rounded-lg" />
-            ))}
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 space-y-6">
-          {/* Profile card skeleton */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
-            <Skeleton className="h-6 w-32 bg-white/5 rounded-lg" />
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i}>
-                  <Skeleton className="h-3 w-24 mb-2 bg-white/5 rounded" />
-                  <Skeleton className="h-10 w-full bg-white/5 rounded-lg" />
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-3 pt-6 border-t border-white/10">
-              <Skeleton className="flex-1 h-10 bg-white/5 rounded-lg" />
-              <Skeleton className="flex-1 h-10 bg-white/5 rounded-lg" />
-            </div>
-          </div>
-        </div>
+      <div className="flex gap-3 pt-6 border-t border-white/10">
+        <Skeleton className="flex-1 h-10 bg-white/5 rounded-lg" />
+        <Skeleton className="flex-1 h-10 bg-white/5 rounded-lg" />
       </div>
     </div>
   );

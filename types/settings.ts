@@ -4,26 +4,22 @@ export type IntegrationProvider =
   | "solana"
   | "ethereum"
   | "bitcoin"
+  | "metamask"
 export type IntegrationStatus = "connected" | "disconnected" | "error" | "coming_soon";
 
 export interface UserProfile {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
+  image: string;
   emailVerified: boolean;
-  phone?: string;
-  photo?: string;
-  bio?: string;
-  preferredCurrency: CurrencyPreference;
+  preferred_currency: CurrencyPreference;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface NotificationSettings {
   emailNotifications: boolean;
-  priceAlerts: boolean;
-  portfolioUpdates: boolean;
   weeklyReport: boolean;
   pushNotifications: boolean;
   notificationChannels: NotificationChannel[];
@@ -57,11 +53,8 @@ export interface AppSettings {
 }
 
 export interface UpdateProfileInput {
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
+  name?: string;
   photo?: string;
-  bio?: string;
   preferredCurrency?: CurrencyPreference;
 }
 

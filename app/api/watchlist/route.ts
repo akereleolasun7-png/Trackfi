@@ -21,11 +21,21 @@ interface CoinGeckoResponse {
 
 export async function GET(req: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("preferred_currency")
+    .eq("id", user.id)
+    .single();
+
+  const currency = (profile?.preferred_currency ?? "USD").toLowerCase();
 
   const { searchParams } = new URL(req.url);
   const page = Number(searchParams.get("page") ?? 1);
@@ -40,10 +50,16 @@ export async function GET(req: Request) {
         .eq("user_id", user.id)
         .range(offset, offset + limit - 1),
       supabase.from("alerts").select("coin_id").eq("user_id", user.id),
-      supabase.from("holdings").select("coin_id, amount").eq("user_id", user.id),
+      supabase
+        .from("holdings")
+        .select("coin_id, amount")
+        .eq("user_id", user.id),
     ]);
 
-  if ((!watchlist || watchlist.length === 0) && (!holdings || holdings.length === 0)) {
+  if (
+    (!watchlist || watchlist.length === 0) &&
+    (!holdings || holdings.length === 0)
+  ) {
     return NextResponse.json({ coins: [], total: 0, page, limit });
   }
 
@@ -65,12 +81,15 @@ export async function GET(req: Request) {
   } else {
     console.log("Cache missed");
     const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=true&price_change_percentage=24h,7d`,
-      { headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! } }
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&ids=${ids}&order=market_cap_desc&sparkline=true&price_change_percentage=24h,7d`,
+      { headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! } },
     );
 
     if (!res.ok) {
-      return NextResponse.json({ error: "Failed to fetch markets" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch markets" },
+        { status: 500 },
+      );
     }
 
     const data: CoinGeckoResponse[] = await res.json();
@@ -94,15 +113,19 @@ export async function GET(req: Request) {
 
   const alertIds = new Set(alerts?.map((i) => i.coin_id) ?? []);
   const holdingsMap = Object.fromEntries(
-    (holdings ?? []).map((i) => [i.coin_id, i.amount])
+    (holdings ?? []).map((i) => [i.coin_id, i.amount]),
   );
 
   const result = markets.map((coin) => {
     const holdingAmount = holdingsMap[coin.id] ?? null;
-    const holdingsValue = holdingAmount ? holdingAmount * coin.current_price : null;
+    const holdingsValue = holdingAmount
+      ? holdingAmount * coin.current_price
+      : null;
     const holdingsValueChange24h =
       holdingAmount && coin.price_change_percentage_24h
-        ? holdingAmount * coin.current_price * (coin.price_change_percentage_24h / 100)
+        ? holdingAmount *
+          coin.current_price *
+          (coin.price_change_percentage_24h / 100)
         : null;
 
     return {
@@ -114,7 +137,7 @@ export async function GET(req: Request) {
       holdingsValueChange24h,
     };
   });
-  
+
   return NextResponse.json({
     coins: result,
     total: totalCount,

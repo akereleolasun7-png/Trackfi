@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { UserProvider } from "@/context/UserContext";
 import { Metadata } from "next";
 import { Providers } from "@/provider";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
@@ -56,14 +55,12 @@ export default async function AdminLayout({
   };
   return (
     <SidebarProvider defaultOpen={false}>
-      <AppSidebar user={mergedUser} />
+      <AppSidebar />
       <SidebarInset>
         <NavbarDashboard pageTitle="Transactions" />
-        <UserProvider user={mergedUser}>
           <Providers>
             <div style={{ paddingTop: NAVBAR_HEIGHT }}>{children}</div>
           </Providers>
-        </UserProvider>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -1,53 +1,50 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  fetchSettings,
+  
   fetchProfile,
   fetchNotificationSettings,
   fetchSecuritySettings,
   fetchIntegrations,
 } from "@/lib/api/settings";
 
-export const useSettings = () =>
-  useQuery({
-    queryKey: ["settings"],
-    queryFn: fetchSettings,
-    staleTime: 1000 * 60 * 5,
-    refetchInterval: false,
-    retry: false,
-  });
 
-export const useProfile = () =>
+
+export const useProfile = (options?: { enabled?: boolean } ) =>
   useQuery({
     queryKey: ["settings-profile"],
     queryFn: fetchProfile,
     staleTime: 1000 * 60 * 5,
-    refetchInterval: false,
-    retry: false,
+    refetchInterval: 1000 * 60 * 3,
+    retry: true,
+    enabled: options?.enabled ?? true,
   });
 
-export const useNotificationSettings = () =>
+export const useNotificationSettings = (options?: { enabled?: boolean } ) =>
   useQuery({
     queryKey: ["settings-notifications"],
     queryFn: fetchNotificationSettings,
     staleTime: 1000 * 60 * 5,
-    refetchInterval: false,
-    retry: false,
+    refetchInterval: 1000 * 60 * 3,
+    retry: true,
+    enabled: options?.enabled ?? true,
   });
 
-export const useSecuritySettings = () =>
+export const useSecuritySettings = (options?: { enabled?: boolean } ) =>
   useQuery({
     queryKey: ["settings-security"],
     queryFn: fetchSecuritySettings,
     staleTime: 1000 * 60 * 5,
-    refetchInterval: false,
-    retry: false,
+    refetchInterval: 1000 * 60 * 3,
+    retry: true,
+    enabled: options?.enabled ?? true,  
   });
 
-export const useIntegrations = () =>
+export const useIntegrations = (options?: { enabled?: boolean } ) =>
   useQuery({
     queryKey: ["settings-integrations"],
     queryFn: fetchIntegrations,
     staleTime: 1000 * 60 * 2,
-    refetchInterval: false,
-    retry: false,
+    refetchInterval: 1000 * 60 * 3,
+    retry: true,
+    enabled: options?.enabled ?? true,
   });

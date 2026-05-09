@@ -27,6 +27,14 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("preferred_currency")
+      .eq("id", user.id)
+      .single();
+
+    const currency = (profile?.preferred_currency ?? "USD").toLowerCase();
+
     const { searchParams } = new URL(req.url);
     const limit = searchParams.get("limit")
       ? Number(searchParams.get("limit"))
@@ -71,7 +79,7 @@ export async function GET(req: Request) {
       const ids = [...new Set(alerts.map((a) => a.coin_id))].join(",");
 
       const res = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=false`,
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&ids=${ids}&order=market_cap_desc&sparkline=false`,
         { headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! } },
       );
 

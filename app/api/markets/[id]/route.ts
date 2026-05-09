@@ -15,6 +15,14 @@ export async function GET(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("preferred_currency")
+    .eq("id", user.id)
+    .single();
+
+  const currency = (profile?.preferred_currency ?? "USD").toLowerCase();
+
   const res = await fetch(
     `https://api.coingecko.com/api/v3/coins/${id}?localization=false&sparkline=false`,
   );
@@ -27,15 +35,15 @@ export async function GET(
     image: raw.image?.large,
     description: raw.description?.en ?? "",
 
-    current_price: raw.market_data?.current_price?.usd,
-    market_cap: raw.market_data?.market_cap?.usd,
-    total_volume: raw.market_data?.total_volume?.usd,
+    current_price: raw.market_data?.current_price?.[currency],
+    market_cap: raw.market_data?.market_cap?.[currency],
+    total_volume: raw.market_data?.total_volume?.[currency],
 
     price_change_percentage_24h: raw.market_data?.price_change_percentage_24h,
     price_change_percentage_7d: raw.market_data?.price_change_percentage_7d,
 
-    ath: raw.market_data?.ath?.usd,
-    ath_change_percentage: raw.market_data?.ath_change_percentage?.usd,
+    ath: raw.market_data?.ath?.[currency],
+    ath_change_percentage: raw.market_data?.ath_change_percentage?.[currency],
 
     circulating_supply: raw.market_data?.circulating_supply,
     max_supply: raw.market_data?.max_supply,

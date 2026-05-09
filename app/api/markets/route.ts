@@ -23,10 +23,20 @@ interface CoinGeckoResponse {
 
 export async function GET(req: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("preferred_currency")
+    .eq("id", user.id)
+    .single();
+
+  const currency = (profile?.preferred_currency ?? "USD").toLowerCase();
 
   const { searchParams } = new URL(req.url);
   const search = searchParams.get("search")?.toLowerCase() ?? "";
@@ -45,12 +55,15 @@ export async function GET(req: Request) {
   } else {
     console.log(`Cache missed for CG page ${cgPage}`);
     const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${CG_PAGE_SIZE}&page=${cgPage}&sparkline=true&price_change_percentage=24h,7d`,
-      { headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! } }
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${CG_PAGE_SIZE}&page=${cgPage}&sparkline=true&price_change_percentage=24h,7d`,
+      { headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! } },
     );
 
     if (!res.ok) {
-      return NextResponse.json({ error: "Failed to fetch markets" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch markets" },
+        { status: 500 },
+      );
     }
 
     const data: CoinGeckoResponse[] = await res.json();
@@ -73,7 +86,6 @@ export async function GET(req: Request) {
     console.log(`Fetched CG page ${cgPage} and cached`);
   }
 
-  
   const [{ data: watchlist }, { data: alerts }] = await Promise.all([
     supabase.from("watchlist").select("coin_id").eq("user_id", user.id),
     supabase.from("alerts").select("coin_id").eq("user_id", user.id),
@@ -82,7 +94,6 @@ export async function GET(req: Request) {
   const watchlistIds = new Set(watchlist?.map((i) => i.coin_id) ?? []);
   const alertIds = new Set(alerts?.map((i) => i.coin_id) ?? []);
 
-  
   const filtered = markets
     .map((coin) => ({
       ...coin,
@@ -93,15 +104,14 @@ export async function GET(req: Request) {
       search
         ? coin.name.toLowerCase().includes(search) ||
           coin.symbol.toLowerCase().includes(search)
-        : true
+        : true,
     );
 
-  
   const withinBatchOffset = offset % CG_PAGE_SIZE;
 
   return NextResponse.json({
     coins: filtered.slice(withinBatchOffset, withinBatchOffset + PAGE_SIZE),
-    total: filtered.length + (cgPage * CG_PAGE_SIZE), // approximate total
+    total: filtered.length + cgPage * CG_PAGE_SIZE, // approximate total
     page,
     limit: PAGE_SIZE,
     cgPage,

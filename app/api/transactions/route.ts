@@ -15,18 +15,27 @@ interface CoinGeckoMarket {
 export async function GET(req: Request) {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("preferred_currency")
+    .eq("id", user.id)
+    .single();
+
+  const currency = (profile?.preferred_currency ?? "USD").toLowerCase();
+
   const { searchParams } = new URL(req.url);
   const period = searchParams.get("period") ?? "30";
   const page = Number(searchParams.get("page") ?? 1);
-  const limit =  Number(searchParams.get("limit") ?? 20);
+  const limit = Number(searchParams.get("limit") ?? 20);
   const offset = (page - 1) * limit;
 
-  
   let query = supabase
     .from("transactions")
     .select("*", { count: "exact" })
@@ -34,7 +43,6 @@ export async function GET(req: Request) {
     .order("date", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  
   if (period !== "all") {
     const from = new Date();
     from.setDate(from.getDate() - Number(period));
@@ -44,14 +52,16 @@ export async function GET(req: Request) {
   const { data: transactions, count, error } = await query;
 
   if (error) {
-    return NextResponse.json({ error: "Failed to fetch transactions" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch transactions" },
+      { status: 500 },
+    );
   }
 
   if (!transactions || transactions.length === 0) {
     return NextResponse.json({ transactions: [], total: 0, page, limit });
   }
 
-  
   const uniqueCoinIds = [...new Set(transactions.map((t) => t.coin_id))];
   const ids = uniqueCoinIds.join(",");
   const CACHE_KEY = `transaction:markets:${ids}`;
@@ -65,12 +75,15 @@ export async function GET(req: Request) {
   } else {
     console.log("Cache missed");
     const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=false`,
-      { headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! } }
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&ids=${ids}&order=market_cap_desc&sparkline=false`,
+      { headers: { "x-cg-demo-api-key": process.env.COINGECKO_API_KEY! } },
     );
 
     if (!res.ok) {
-      return NextResponse.json({ error: "Failed to fetch markets" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch markets" },
+        { status: 500 },
+      );
     }
 
     markets = await res.json();
@@ -82,7 +95,9 @@ export async function GET(req: Request) {
   const result = transactions.map((tx) => {
     const market = marketMap[tx.coin_id];
     const currentValue = market ? tx.amount * market.current_price : null;
-    const unrealizedPnl = market ? (market.current_price * tx.amount) - tx.total_value : null;
+    const unrealizedPnl = market
+      ? market.current_price * tx.amount - tx.total_value
+      : null;
 
     return {
       ...tx,

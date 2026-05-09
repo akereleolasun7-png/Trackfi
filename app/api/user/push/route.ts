@@ -10,7 +10,6 @@ export async function POST(req: NextRequest) {
   }
 
   const { subscription } = await req.json();
-  console.log( subscription.endpoint , "jjj")
    if (!subscription?.endpoint) {
     return NextResponse.json({ error: "Invalid subscription" }, { status: 400 });
   }
@@ -25,7 +24,6 @@ export async function POST(req: NextRequest) {
     );
 
   if (error) {
-    console.log(error , "errti fromthe route")
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
